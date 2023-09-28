@@ -92,11 +92,12 @@ public class GameOfLife : MonoBehaviour
                     if (last[neighbourCell]) neighbours++;
                 }
 
-                if (last[currentCell] && neighbours < 2) current[currentCell] = false;
-                else if (last[currentCell] && (neighbours == 2 || neighbours == 3)) current[currentCell] = true;
-                else if (last[currentCell] && neighbours > 3) current[currentCell] = false;
-                else if (!last[currentCell] && neighbours == 3) current[currentCell] = true;
-                else current[currentCell] = false;
+                if (last[currentCell])
+                    if (neighbours == 2 || neighbours == 3) current[currentCell] = true;
+                    else current[currentCell] = false;
+                else
+                    if (neighbours == 3) current[currentCell] = true;
+                    else current[currentCell] = false;
             }
     }
 
