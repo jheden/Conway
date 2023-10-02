@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using JetBrains.Annotations;
+using UnityEditor.Tilemaps;
 
 public sealed class Shapes
 {
@@ -24,12 +26,44 @@ public sealed class Shapes
             Center = new Vector2Int(Width / 2, Height / 2);
 
             List<Vector2Int> positions = new();
-            for (int y = 0; y < Shape.GetLength(1); y++)
-                for (int x = 0; x < Shape.GetLength(0); x++)
+            for (int x = 0; x < Width; x++)
+                for (int y = 0; y < Height; y++)
                     if (Shape[x, y] == 1)
                         positions.Add(new Vector2Int(x - Center.x, y - Center.y));
             Positions = positions.ToArray();
         }
+
+        public readonly IShape FlipX
+        {
+            get
+            {
+                int[,] temp = new int[Width, Height];
+
+                for (int x = 0; x < Width; x++)
+                    for (int y = 0; y < Height; y++)
+                        temp[x, y] = Shape[Height - x - 1, y];
+
+                return new IShape(temp);
+            }
+        }
+
+        public readonly IShape FlipY
+        {
+            get
+            {
+                int[,] temp = new int[Width, Height];
+
+                for (int x = 0; x < Width; x++)
+                    for (int y = 0; y < Height; y++)
+                        temp[x, y] = Shape[x, Height - y - 1];
+
+                return new IShape(temp);
+            }
+        }
+
+        public readonly IShape FlipXY {  get => FlipX.FlipY;  }
+
+        public readonly IShape Rotate180 { get => FlipXY; }
     }
 
     public IShape Neighbors = new(new int[,] {
@@ -38,15 +72,69 @@ public sealed class Shapes
         { 1, 1, 1 }
     });
 
-    public IShape Acorn = new(new int[,] {
-        { 0, 1, 0, 0, 0, 0, 0 },
-        { 0, 0, 0, 1, 0, 0, 0 },
-        { 1, 1, 0, 0, 1, 1, 1 }
+    #region Still lifes
+    public IShape Beehive = new(new int[,] {
+        { 0, 1, 1, 0 },
+        { 1, 0, 0, 1 },
+        { 0, 1, 1, 0 }
     });
 
+    public IShape Block = new(new int[,] {
+        { 1, 1 },
+        { 1, 1 },
+    });
+
+    public IShape Boat = new(new int[,] {
+        { 1, 1, 0 },
+        { 1, 0, 1 },
+        { 0, 1, 0 }
+    });
+
+    public IShape Loaf = new(new int[,] {
+        { 0, 1, 1, 0 },
+        { 1, 0, 0, 1 },
+        { 0, 1, 0, 1 },
+        { 0, 0, 1, 0 }
+    });
+
+    public IShape Tub = new(new int[,] {
+        { 0, 1, 0 },
+        { 1, 0, 1 },
+        { 0, 1, 0 }
+    });
+    #endregion
+
+    #region Oscillators
+    public IShape Beacon = new(new int[,] {
+        { 1, 1, 0, 0 },
+        { 1, 0, 0, 0 },
+        { 0, 0, 0, 1 },
+        { 0, 0, 1, 1 }
+    });
+
+    public IShape Blinker = new(new int[,] {
+        { 1, 1, 1 }
+    });
+
+    public IShape Toad = new(new int[,] {
+        { 0, 0, 1, 0 },
+        { 1, 0, 0, 1 },
+        { 1, 0, 0, 1 },
+        { 0, 1, 0, 0 }
+    });
+    #endregion
+
+    #region Spaceships
     public IShape Glider = new(new int[,] {
         { 0, 0, 1 },
         { 1, 0, 1 },
         { 0, 1, 1 }
+    });
+    #endregion
+
+    public IShape Acorn = new(new int[,] {
+        { 0, 1, 0, 0, 0, 0, 0 },
+        { 0, 0, 0, 1, 0, 0, 0 },
+        { 1, 1, 0, 0, 1, 1, 1 }
     });
 }

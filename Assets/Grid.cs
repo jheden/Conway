@@ -62,7 +62,7 @@ public abstract class Grid : MonoBehaviour
         Resolution = _resolution;
         Size = _size;
 
-        SetShape(Resolution.x / 2, Resolution.y / 2, Shapes.Instance.Acorn);
+        SetShape(Resolution.x / 2, Resolution.y / 2, Shapes.Instance.Glider.FlipX.FlipY);
     }
 
     private void Update()
@@ -90,7 +90,7 @@ public abstract class Grid : MonoBehaviour
         return _indices;
     }
 
-    protected void SetShape(int x, int y, IShape shape)
+    public void SetShape(int x, int y, IShape shape)
     {
         foreach (int position in GetIndices(x, y, shape))
             SetCurrent(position, true);
