@@ -6,7 +6,7 @@ public class GameController : MonoBehaviour
     private int maxFrameRate = 200;
     private int frameRateStep = 10;
     private int minZoom = 1;
-    private int maxZoom = 40;
+    private int maxZoom = 10;
     private float zoomStep = 0.1f;
     public Grid grid;
 

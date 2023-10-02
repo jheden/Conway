@@ -35,7 +35,7 @@ public abstract class Grid : MonoBehaviour
             UpdateVertices();
         }
     }
-    protected Vector2 _size = new(10, 10);
+    protected Vector2 _size = new(20, 20);
     #endregion
 
     #region Internal variables
