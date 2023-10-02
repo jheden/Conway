@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static Shapes;
 
@@ -6,6 +7,7 @@ using static Shapes;
 [RequireComponent(typeof(MeshFilter))]
 public abstract class Grid : MonoBehaviour
 {
+    #region Properties
     public Vector2 Increments { get; private set; }
     public int Length { get; private set; }
 
@@ -21,7 +23,7 @@ public abstract class Grid : MonoBehaviour
             UpdateVertices();
         }
     }
-    protected Vector2Int _resolution = new(512, 512);
+    protected Vector2Int _resolution = new(256, 256);
 
     public Vector2 Size
     {
@@ -34,13 +36,25 @@ public abstract class Grid : MonoBehaviour
         }
     }
     protected Vector2 _size = new(20, 20);
+    #endregion
 
+    #region Internal variables
     protected List<int> _indices = new();
     protected List<int> _triangles = new();
     protected List<Vector3> _vertices = new();
-
     protected Mesh mesh;
+    #endregion
 
+    #region Abstract methods
+    protected abstract void CopyGrid();
+    protected abstract bool GetCurrent(int i);
+    protected abstract bool GetLast(int i);
+    protected abstract void ResetGrid();
+    protected abstract void SetCurrent(int i, bool state);
+    protected abstract void SetLast(int i, bool state);
+    #endregion
+
+    #region Unity methods
     void Awake()
     {
         GetComponent<MeshFilter>().mesh = mesh = new() { indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
@@ -51,19 +65,23 @@ public abstract class Grid : MonoBehaviour
         SetShape(Resolution.x / 2, Resolution.y / 2, Shapes.Instance.Acorn);
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         UpdateCells();
         UpdateTriangles();
     }
+    #endregion
 
-    protected abstract void SetShape(int x, int y, IShape shape);
+    protected IEnumerable<int> GetAlive()
+    {
+        return Enumerable.Range(0, Length).Where(i => GetCurrent(i));
+    }
 
     protected List<int> GetIndices(int x, int y, IShape shape)
     {
         _indices.Clear();
 
-        foreach (var position in shape.Cock)
+        foreach (var position in shape.Positions)
             _indices.Add(
                 (x + position.x + Resolution.x) % Resolution.x +
                 ((y + position.y + Resolution.y) % Resolution.y) * Resolution.x
@@ -72,11 +90,46 @@ public abstract class Grid : MonoBehaviour
         return _indices;
     }
 
-    protected abstract void ResetGrid();
+    protected void SetShape(int x, int y, IShape shape)
+    {
+        foreach (int position in GetIndices(x, y, shape))
+            SetCurrent(position, true);
+    }
 
-    protected abstract void UpdateCells();
+    protected void UpdateCells()
+    {
+        CopyGrid();
 
-    protected abstract void UpdateTriangles();
+        for (int i = 0; i < Length; i++)
+        {
+            int neighbours = 0;
+
+            foreach (int neighbour in GetIndices(i % Resolution.x, i / Resolution.x, Shapes.Instance.Neighbors))
+                if (GetLast(neighbour)) neighbours++;
+
+            SetCurrent(i, (GetLast(i) ? 2 : 3) <= neighbours && neighbours <= 3);
+        }
+    }
+
+    protected void UpdateTriangles()
+    {
+        _triangles.Clear();
+
+        foreach (int i in GetAlive())
+        {
+            int j = i + i / Resolution.x;
+
+            _triangles.Add(j);
+            _triangles.Add(j + Resolution.x + 1);
+            _triangles.Add(j + 1);
+
+            _triangles.Add(j + Resolution.x + 2);
+            _triangles.Add(j + 1);
+            _triangles.Add(j + Resolution.x + 1);
+        }
+
+        mesh.triangles = _triangles.ToArray();
+    }
 
     protected void UpdateVertices()
     {

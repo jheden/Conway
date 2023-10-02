@@ -14,7 +14,7 @@ public sealed class Shapes
         public int Width { get; private set; }
         public int Height { get; private set; }
         public Vector2Int Center { get; private set; }
-        public Vector2Int[] Cock { get; private set; }
+        public Vector2Int[] Positions { get; private set; }
 
         public IShape(int[,] shape)
         {
@@ -23,12 +23,12 @@ public sealed class Shapes
             Height = shape.GetLength(1);
             Center = new Vector2Int(Width / 2, Height / 2);
 
-            List<Vector2Int> cock = new();
+            List<Vector2Int> positions = new();
             for (int y = 0; y < Shape.GetLength(1); y++)
                 for (int x = 0; x < Shape.GetLength(0); x++)
                     if (Shape[x, y] == 1)
-                        cock.Add(new Vector2Int(x - Center.x, y - Center.y));
-            Cock = cock.ToArray();
+                        positions.Add(new Vector2Int(x - Center.x, y - Center.y));
+            Positions = positions.ToArray();
         }
     }
 
