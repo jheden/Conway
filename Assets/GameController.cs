@@ -5,6 +5,7 @@ public class GameController : MonoBehaviour
     private int minZoom = 1;
     private int maxZoom = 10;
     private float zoomStep = 3f;
+    private float timeScale;
     public Grid grid;
 
     private void Update()
@@ -23,5 +24,16 @@ public class GameController : MonoBehaviour
 
         if (Input.GetKey(KeyCode.DownArrow))
             Camera.main.orthographicSize = Mathf.Min(maxZoom, Camera.main.orthographicSize + zoomStep * Time.unscaledDeltaTime);
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (Time.timeScale == 0)
+                Time.timeScale = timeScale;
+            else
+            {
+                timeScale = Time.timeScale;
+                Time.timeScale = 0;
+            }
+        }
     }
 }
