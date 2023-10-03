@@ -28,7 +28,7 @@ public abstract class Grid : MonoBehaviour
             UpdateVertices();
         }
     }
-    protected Vector2Int _resolution = new(256, 256);
+    protected Vector2Int _resolution = new(16, 16);
 
     public Vector2 Size
     {
