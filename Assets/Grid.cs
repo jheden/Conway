@@ -29,7 +29,7 @@ public abstract class Grid : MonoBehaviour
             UpdateVertices();
         }
     }
-    private Vector2Int _resolution = new(16, 16);
+    private Vector2Int _resolution = new(256, 256);
 
     public Vector2 Size
     {
@@ -66,12 +66,13 @@ public abstract class Grid : MonoBehaviour
 
         Resolution = _resolution;
         Size = _size;
-
-        SetShape(Resolution.x / 2, Resolution.y / 2, Shapes.Instance.Pulsar);
     }
 
     private void Update()
     {
+        if (Input.GetMouseButtonDown(0)) ClickShape();
+        if (Input.GetMouseButton(1)) ClickDraw();
+
         if (Time.time < _nextUpdate) return;
 
         UpdateCells();
@@ -79,6 +80,24 @@ public abstract class Grid : MonoBehaviour
         _nextUpdate = Time.time + 1f / 16;
     }
     #endregion
+
+    private void ClickDraw()
+    {
+        var position = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition) / Increments + Resolution / 2;
+        SetCurrent((int)position.x + (int)position.y * Resolution.x, true);
+    }
+
+    private void ClickShape()
+    {
+        var position = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition) / Increments + Resolution / 2;
+        AddShape((int)position.x, (int)position.y, Shapes.Instance.Pulsar);
+    }
+
+    public void AddShape(int x, int y, IShape shape)
+    {
+        foreach (int position in GetIndices(x, y, shape))
+            SetCurrent(position, true);
+    }
 
     protected IEnumerable<int> GetAlive()
     {
@@ -96,12 +115,6 @@ public abstract class Grid : MonoBehaviour
             );
 
         return _indices;
-    }
-
-    public void SetShape(int x, int y, IShape shape)
-    {
-        foreach (int position in GetIndices(x, y, shape))
-            SetCurrent(position, true);
     }
 
     protected void UpdateCells()
