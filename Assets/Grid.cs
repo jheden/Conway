@@ -100,7 +100,7 @@ public abstract class Grid : MonoBehaviour
     private void ClickShape()
     {
         var position = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition) / Increments + Resolution / 2;
-        AddShape((int)position.x, (int)position.y, Shapes.Instance.Pulsar);
+        AddShape((int)position.x, (int)position.y, Shapes.Instance.Glider);
     }
 
     public void AddShape(int x, int y, IShape shape)

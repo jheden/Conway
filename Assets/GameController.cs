@@ -15,7 +15,7 @@ public class GameController : MonoBehaviour
             Time.timeScale /= 2;
             if (Time.timeScale < 1f / 16) Time.timeScale = 0;
         }
-            
+
         if (Input.GetKeyDown(KeyCode.RightArrow))
             Time.timeScale = Mathf.Clamp(Time.timeScale * 2, 1f/16, 16f);
 

@@ -33,6 +33,7 @@ public sealed class Shapes
             Positions = positions.ToArray();
         }
 
+        #region Permutations
         public readonly IShape FlipX
         {
             get
@@ -61,16 +62,39 @@ public sealed class Shapes
             }
         }
 
-        public readonly IShape FlipXY {  get => FlipX.FlipY;  }
+        public readonly IShape Transpose
+        {
+            get
+            {
+                int[,] temp = new int[Height, Width];
 
-        public readonly IShape Rotate180 { get => FlipXY; }
+                for (int x = 0; x < Width; x++)
+                    for (int y = 0; y < Height; y++)
+                        temp[y, x] = Shape[x, y];
+
+                return new IShape(temp);
+            }
+        }
+
+        public readonly IShape AntiTranspose { get => Transpose.FlipX.FlipY; }
+
+        public readonly IShape RotateRight { get => Transpose.FlipX; }
+
+        public readonly IShape RotateLeft { get => FlipX.Transpose; }
+
+        public readonly IShape RotateTwice { get => FlipX.FlipY; }
+        #endregion
     }
 
+    #region Shape definitions
+
+    #region Helpers
     public IShape Neighbors = new(new int[,] {
         { 1, 1, 1 },
         { 1, 0, 1 },
         { 1, 1, 1 }
     });
+    #endregion
 
     #region Still lifes
     public IShape Beehive = new(new int[,] {
@@ -153,4 +177,5 @@ public sealed class Shapes
         { 0, 0, 0, 1, 0, 0, 0 },
         { 1, 1, 0, 0, 1, 1, 1 }
     });
+    #endregion
 }
