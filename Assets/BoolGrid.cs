@@ -1,10 +1,17 @@
+using System.Linq;
+using System.Collections.Generic;
+using Unity.VisualScripting;
+
 public class BoolGrid : Grid
 {
-    private bool[] current, last;
+    private bool[] current;
 
     protected override void CopyGrid()
     {
-        System.Array.Copy(current, last, Length);
+        int index = States.FindLastIndex(state => Enumerable.SequenceEqual(current, state));
+        if (index != -1)
+            print($"Stable state discovered at generation {index}, meaning period is {States.Count - index}");
+        Last = current;
     }
 
     protected override bool GetCurrent(int i)
@@ -12,24 +19,13 @@ public class BoolGrid : Grid
         return current[i];
     }
 
-    protected override bool GetLast(int i)
-    {
-        return last[i];
-    }
-
     protected override void ResetGrid()
     {
         current = new bool[Length];
-        last = new bool[Length];
     }
 
     protected override void SetCurrent(int i, bool state)
     {
         current[i] = state;
-    }
-
-    protected override void SetLast(int i, bool state)
-    {
-        last[i] = state;
     }
 }

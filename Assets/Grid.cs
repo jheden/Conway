@@ -10,6 +10,11 @@ public abstract class Grid : MonoBehaviour
     #region Properties
     public Vector2 Increments { get; private set; }
     public int Length { get; private set; }
+    protected List<bool[]> States { get; } = new();
+    protected bool[] Last { 
+        get => States.Last();
+        set => States.Add((bool[])value.Clone());
+    }
 
     public Vector2Int Resolution
     {
@@ -49,10 +54,8 @@ public abstract class Grid : MonoBehaviour
     #region Abstract methods
     protected abstract void CopyGrid();
     protected abstract bool GetCurrent(int i);
-    protected abstract bool GetLast(int i);
     protected abstract void ResetGrid();
     protected abstract void SetCurrent(int i, bool state);
-    protected abstract void SetLast(int i, bool state);
     #endregion
 
     #region Unity methods
@@ -63,7 +66,7 @@ public abstract class Grid : MonoBehaviour
         Resolution = _resolution;
         Size = _size;
 
-        SetShape(Resolution.x / 2, Resolution.y / 2, Shapes.Instance.Glider.FlipX.FlipY);
+        SetShape(Resolution.x / 2, Resolution.y / 2, Shapes.Instance.Pulsar);
     }
 
     private void Update()
@@ -109,9 +112,9 @@ public abstract class Grid : MonoBehaviour
             int neighbours = 0;
 
             foreach (int neighbour in GetIndices(i % Resolution.x, i / Resolution.x, Shapes.Instance.Neighbors))
-                if (GetLast(neighbour)) neighbours++;
+                if (Last[neighbour]) neighbours++;
 
-            SetCurrent(i, (GetLast(i) ? 2 : 3) <= neighbours && neighbours <= 3);
+            SetCurrent(i, (Last[i] ? 2 : 3) <= neighbours && neighbours <= 3);
         }
     }
 
