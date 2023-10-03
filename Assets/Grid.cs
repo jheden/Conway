@@ -8,9 +8,10 @@ using static Shapes;
 public abstract class Grid : MonoBehaviour
 {
     #region Properties
-    public Vector2 Increments { get; private set; }
-    public int Length { get; private set; }
+    protected Vector2 Increments { get; private set; }
+    protected int Length { get; private set; }
     protected List<bool[]> States { get; } = new();
+    protected abstract int[] Durations { get; }
     protected bool[] Last { 
         get => States.Last();
         set => States.Add((bool[])value.Clone());
@@ -28,7 +29,7 @@ public abstract class Grid : MonoBehaviour
             UpdateVertices();
         }
     }
-    protected Vector2Int _resolution = new(16, 16);
+    private Vector2Int _resolution = new(16, 16);
 
     public Vector2 Size
     {
@@ -40,7 +41,7 @@ public abstract class Grid : MonoBehaviour
             UpdateVertices();
         }
     }
-    protected Vector2 _size = new(20, 20);
+    private Vector2 _size = new(20, 20);
     #endregion
 
     #region Internal variables

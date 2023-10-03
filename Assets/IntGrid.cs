@@ -6,6 +6,8 @@ public class IntGrid : Grid
 {
     private int[] current;
 
+    protected override int[] Durations { get => current; }
+
     protected override void CopyGrid()
     {
         var tmp = Array.ConvertAll(current, state => state > 0);
@@ -28,6 +30,6 @@ public class IntGrid : Grid
     protected override void SetCurrent(int i, bool state)
     {
         if (state) current[i] = Mathf.Max(1, current[i] + 1);
-        else current[i] = Mathf.Min(0, current[i] - 1);
+        else current[i] = Mathf.Min(-1, current[i] - 1);
     }
 }

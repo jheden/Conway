@@ -1,10 +1,16 @@
 using System.Linq;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using System;
 
 public class BoolGrid : Grid
 {
     private bool[] current;
+
+    protected override int[] Durations
+    {
+        get => Array.ConvertAll(current, state => state ? -1 : 1);
+    }
 
     protected override void CopyGrid()
     {

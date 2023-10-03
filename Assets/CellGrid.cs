@@ -7,6 +7,10 @@ public class CellGrid : Grid
 {
     private Cell[] current;
 
+    protected override int[] Durations {
+        get => Array.ConvertAll(current, cell => cell.Duration * (cell.Alive ? 1 : -1));
+    }
+
     protected override void CopyGrid()
     {
         var tmp = Array.ConvertAll(current, state => (bool)state);
@@ -37,9 +41,25 @@ public class CellGrid : Grid
 
 public class Cell
 {
-    public bool Alive { get; set; } = false;
+    public bool Alive { 
+        get => _alive;
+        set {
+            _alive = value;
+            if (value) Duration = Mathf.Max(1, Duration + 1);
+            else Duration = Mathf.Min(-1, Duration - 1);
+        }
+    }
+    private bool _alive = false;
 
-    public static implicit operator bool(Cell cell) {
+    public int Duration { get; private set; }
+
+    public static implicit operator bool(Cell cell)
+    {
         return cell.Alive;
+    }
+
+    public static implicit operator int(Cell cell)
+    {
+        return cell.Duration;
     }
 }
