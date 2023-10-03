@@ -72,12 +72,15 @@ public abstract class Grid : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0)) ClickShape();
         if (Input.GetMouseButton(1)) ClickDraw();
+        if (Input.GetMouseButtonDown(2)) ClickFill();
 
-        if (Time.time < _nextUpdate) return;
+        if (Time.time > _nextUpdate)
+        {
+            UpdateCells();
+            _nextUpdate = Time.time + 1f / 16;
+        }
 
-        UpdateCells();
         UpdateTriangles();
-        _nextUpdate = Time.time + 1f / 16;
     }
     #endregion
 
@@ -85,6 +88,13 @@ public abstract class Grid : MonoBehaviour
     {
         var position = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition) / Increments + Resolution / 2;
         SetCurrent((int)position.x + (int)position.y * Resolution.x, true);
+    }
+
+    private void ClickFill()
+    {
+        for (int i = 0; i < Length; i++)
+            if (Random.Range(0, 100) < 20)
+                SetCurrent(i, true);
     }
 
     private void ClickShape()
