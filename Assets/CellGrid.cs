@@ -7,8 +7,9 @@ public class CellGrid : Grid
 {
     private Cell[] current;
 
-    protected override int[] Durations {
-        get => Array.ConvertAll(current, cell => cell.Duration * (cell.Alive ? 1 : -1));
+    protected override int[] Durations
+    {
+        get => Array.ConvertAll(current, cell => cell.Duration);
     }
 
     protected override void CopyGrid()
