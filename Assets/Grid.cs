@@ -42,7 +42,8 @@ public abstract class Grid : MonoBehaviour
     protected List<int> _indices = new();
     protected List<int> _triangles = new();
     protected List<Vector3> _vertices = new();
-    protected Mesh mesh;
+    protected Mesh _mesh;
+    protected float _nextUpdate;
     #endregion
 
     #region Abstract methods
@@ -57,7 +58,7 @@ public abstract class Grid : MonoBehaviour
     #region Unity methods
     void Awake()
     {
-        GetComponent<MeshFilter>().mesh = mesh = new() { indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
+        GetComponent<MeshFilter>().mesh = _mesh = new() { indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
 
         Resolution = _resolution;
         Size = _size;
@@ -67,8 +68,11 @@ public abstract class Grid : MonoBehaviour
 
     private void Update()
     {
+        if (Time.time < _nextUpdate) return;
+
         UpdateCells();
         UpdateTriangles();
+        _nextUpdate = Time.time + 1f / 16;
     }
     #endregion
 
@@ -128,7 +132,7 @@ public abstract class Grid : MonoBehaviour
             _triangles.Add(j + Resolution.x + 1);
         }
 
-        mesh.triangles = _triangles.ToArray();
+        _mesh.triangles = _triangles.ToArray();
     }
 
     protected void UpdateVertices()
@@ -145,6 +149,6 @@ public abstract class Grid : MonoBehaviour
                     y * Increments.y - halfY
                 ));
 
-        mesh.vertices = _vertices.ToArray();
+        _mesh.vertices = _vertices.ToArray();
     }
 }
