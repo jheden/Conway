@@ -81,7 +81,7 @@ public abstract class Grid : MonoBehaviour
 
         if (Time.time > _nextUpdate)
         {
-            if (rewind) LoadState();
+            if (rewind) try { LoadState(); } catch { }
             else UpdateCells();
             _nextUpdate = Time.time + 1f / 16;
         }
@@ -90,20 +90,20 @@ public abstract class Grid : MonoBehaviour
     }
     #endregion
 
-    private void ClickDraw()
+    public void ClickDraw()
     {
         var position = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition) / Increments + Resolution / 2;
         SetCurrent((int)position.x + (int)position.y * Resolution.x, true);
     }
 
-    private void ClickFill()
+    public void ClickFill()
     {
         for (int i = 0; i < Length; i++)
             if (Random.Range(0, 100) < 20)
                 SetCurrent(i, true);
     }
 
-    private void ClickShape()
+    public void ClickShape()
     {
         var position = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition) / Increments + Resolution / 2;
         AddShape((int)position.x, (int)position.y, Shapes.Instance.Glider);
