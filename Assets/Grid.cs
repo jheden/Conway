@@ -29,9 +29,10 @@ public abstract class Grid : MonoBehaviour
             Length = value.x * value.y;
             ResetGrid();
             UpdateVertices();
+            UpdateTriangles();
         }
     }
-    private Vector2Int _resolution = new(512, 512);
+    private Vector2Int _resolution = new(256, 256);
 
     public Vector2 Size
     {
@@ -47,6 +48,8 @@ public abstract class Grid : MonoBehaviour
     #endregion
 
     #region Internal variables
+    protected Color32[] __colors;
+    protected List<Color32> _colors = new();
     protected List<int> _indices = new();
     protected List<int> _triangles = new();
     protected List<Vector3> _vertices = new();
@@ -55,6 +58,7 @@ public abstract class Grid : MonoBehaviour
     #endregion
 
     #region Abstract methods
+    protected abstract Color GetColor(int i);
     protected abstract bool GetCurrent(int i);
     protected abstract void ResetGrid();
     protected abstract void LoadState();
@@ -86,7 +90,7 @@ public abstract class Grid : MonoBehaviour
             _nextUpdate = Time.time + 1f / 16;
         }
 
-        UpdateTriangles();
+        UpdateColors();
     }
     #endregion
 
@@ -148,21 +152,34 @@ public abstract class Grid : MonoBehaviour
         }
     }
 
+    protected void UpdateColors()
+    {
+        _colors.Clear();
+
+        for (int i = 0; i < Length; i++)
+        {
+            var color = GetColor(i);
+
+            for (int j = 0; j < 4; j++)
+                _colors.Add(color);
+        }
+
+        _mesh.colors32 = _colors.ToArray();
+    }
+
     protected void UpdateTriangles()
     {
         _triangles.Clear();
 
-        foreach (int i in GetAlive())
+        for (int i = 0; i < Length * 4; i+=4)
         {
-            int j = i + i / Resolution.x;
+            _triangles.Add(i);
+            _triangles.Add(i + 2);
+            _triangles.Add(i + 1);
 
-            _triangles.Add(j);
-            _triangles.Add(j + Resolution.x + 1);
-            _triangles.Add(j + 1);
-
-            _triangles.Add(j + Resolution.x + 2);
-            _triangles.Add(j + 1);
-            _triangles.Add(j + Resolution.x + 1);
+            _triangles.Add(i + 3);
+            _triangles.Add(i + 1);
+            _triangles.Add(i + 2);
         }
 
         _mesh.triangles = _triangles.ToArray();
@@ -172,15 +189,19 @@ public abstract class Grid : MonoBehaviour
     {
         _vertices.Clear();
 
-        var halfX = Size.x / 2;
-        var halfY = Size.y / 2;
+        var halfSize = Size / 2;
 
-        for (int y = 0; y <= Resolution.y; y++)
-            for (int x = 0; x <= Resolution.x; x++)
-                _vertices.Add(new Vector3(
-                    x * Increments.x - halfX,
-                    y * Increments.y - halfY
-                ));
+        for (int y = 0; y < Resolution.y; y++)
+            for (int x = 0; x < Resolution.x; x++)
+            {
+                var xPos = x * Increments.x - halfSize.x;
+                var yPos = y * Increments.y - halfSize.y;
+
+                _vertices.Add(new Vector3(xPos, yPos));
+                _vertices.Add(new Vector3(xPos + Increments.x, yPos));
+                _vertices.Add(new Vector3(xPos, yPos + Increments.y));
+                _vertices.Add(new Vector3(xPos + Increments.x, yPos + Increments.y));
+            }
 
         _mesh.vertices = _vertices.ToArray();
     }

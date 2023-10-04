@@ -110,6 +110,22 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: c49a99d9-39b4-462e-b13b-1367812d07c9
     m_ActionName: UI/TrackedDeviceOrientation
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 66660f03-168e-49c2-90f0-0fd3c46f2062
+    m_ActionName: Player/Pause[/Keyboard/space]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 4a7d63a5-8011-4949-af2d-2e8b48d01d83
+    m_ActionName: Player/SpeedUp[/Keyboard/rightArrow]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 8257c8ae-045f-42c3-bd18-d67c4aae4729
+    m_ActionName: Player/SpeedDown[/Keyboard/leftArrow]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 8aaafca0-4d20-4667-ac64-a9853864eaac
+    m_ActionName: Player/Zoom[/Keyboard/downArrow,/Keyboard/upArrow]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player

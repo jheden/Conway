@@ -1,6 +1,7 @@
 using System.Linq;
 using System;
 using UnityEngine;
+using Unity.VisualScripting;
 
 public class IntGrid : Grid
 {
@@ -39,6 +40,13 @@ public class IntGrid : Grid
         print(current[0]);
     }
 
+    protected override Color GetColor(int i)
+    {
+        if (current[i] == 0) return Color.black;
+        if (current[i] > 0) return Color.HSVToRGB(Mathf.Lerp(1f / 36, 2f / 3, (float)current[i] / 50), 1f, 1f);
+        return Color.HSVToRGB(1f / 36, 1f, Mathf.Lerp(1f, 0f, -(float)current[i] / 10));
+    }
+
     protected override bool GetCurrent(int i)
     {
         return current[i] > 0;
@@ -52,6 +60,7 @@ public class IntGrid : Grid
     protected override void SetCurrent(int i, bool state)
     {
         if (state) current[i] = Mathf.Max(1, current[i] + 1);
+        else if (current[i] == 0) return;
         else current[i] = Mathf.Min(-1, current[i] - 1);
     }
 }

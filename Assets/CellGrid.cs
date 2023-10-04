@@ -42,6 +42,13 @@ public class CellGrid : Grid
         print(current[0].Duration);
     }
 
+    protected override Color GetColor(int i)
+    {
+        if (current[i].Duration == 0) return Color.black;
+        if (current[i].Alive) return Color.HSVToRGB(Mathf.Lerp(1f / 36, 2f / 3, (float)current[i].Duration / 50), 1f, 1f);
+        return Color.HSVToRGB(1f / 36, 1f, Mathf.Lerp(1f, 0f, -(float)current[i].Duration / 10));
+    }
+
     protected override bool GetCurrent(int i)
     {
         return current[i].Alive;
@@ -68,6 +75,7 @@ public class Cell
         set {
             _alive = value;
             if (value) Duration = Mathf.Max(1, Duration + 1);
+            else if (Duration == 0) return;
             else Duration = Mathf.Min(-1, Duration - 1);
         }
     }

@@ -2,6 +2,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using System;
+using UnityEngine;
 
 public class BoolGrid : Grid
 {
@@ -24,6 +25,11 @@ public class BoolGrid : Grid
     {
         current = States.Last();
         States.RemoveAt(States.Count - 1);
+    }
+
+    protected override Color GetColor(int i)
+    {
+        return current[i] ? Color.white : Color.black;
     }
 
     protected override bool GetCurrent(int i)
