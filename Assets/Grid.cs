@@ -17,6 +17,8 @@ public abstract class Grid : MonoBehaviour
         set => States.Add((bool[])value.Clone());
     }
 
+    public bool rewind;
+
     public Vector2Int Resolution
     {
         get => _resolution;
@@ -29,7 +31,7 @@ public abstract class Grid : MonoBehaviour
             UpdateVertices();
         }
     }
-    private Vector2Int _resolution = new(256, 256);
+    private Vector2Int _resolution = new(512, 512);
 
     public Vector2 Size
     {
@@ -53,9 +55,10 @@ public abstract class Grid : MonoBehaviour
     #endregion
 
     #region Abstract methods
-    protected abstract void CopyGrid();
     protected abstract bool GetCurrent(int i);
     protected abstract void ResetGrid();
+    protected abstract void LoadState();
+    protected abstract void SaveState();
     protected abstract void SetCurrent(int i, bool state);
     #endregion
 
@@ -70,13 +73,16 @@ public abstract class Grid : MonoBehaviour
 
     private void Update()
     {
+        rewind = Input.GetKey(KeyCode.Backspace);
+
         if (Input.GetMouseButtonDown(0)) ClickShape();
         if (Input.GetMouseButton(1)) ClickDraw();
         if (Input.GetMouseButtonDown(2)) ClickFill();
 
         if (Time.time > _nextUpdate)
         {
-            UpdateCells();
+            if (rewind) LoadState();
+            else UpdateCells();
             _nextUpdate = Time.time + 1f / 16;
         }
 
@@ -129,7 +135,7 @@ public abstract class Grid : MonoBehaviour
 
     protected void UpdateCells()
     {
-        CopyGrid();
+        SaveState();
 
         for (int i = 0; i < Length; i++)
         {

@@ -12,12 +12,18 @@ public class BoolGrid : Grid
         get => Array.ConvertAll(current, state => state ? -1 : 1);
     }
 
-    protected override void CopyGrid()
+    protected override void SaveState()
     {
         int index = States.FindLastIndex(state => Enumerable.SequenceEqual(current, state));
         if (index != -1)
             print($"Stable state discovered at generation {index}, meaning period is {States.Count - index}");
         Last = current;
+    }
+
+    protected override void LoadState()
+    {
+        current = States.Last();
+        States.RemoveAt(States.Count - 1);
     }
 
     protected override bool GetCurrent(int i)
