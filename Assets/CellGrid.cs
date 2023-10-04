@@ -32,6 +32,7 @@ public class CellGrid : Grid
             {
                 if (States[j][i] != state[i]) break;
                 gen += States[j][i] ? 1 : -1;
+                if (j == 0) gen = Mathf.Max(0, gen);
             }
 
             current[i].Alive = state[i];
@@ -39,7 +40,6 @@ public class CellGrid : Grid
         }
 
         States.RemoveAt(States.Count - 1);
-        print(current[0].Duration);
     }
 
     protected override Color GetColor(int i)

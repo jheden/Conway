@@ -18,7 +18,6 @@ public class IntGrid : Grid
         //if (index != -1)
         //    print($"Stable state discovered at generation {index}, meaning period is {States.Count - index}");
         Last = tmp;
-        print(current[0]);
     }
 
     protected override void LoadState()
@@ -32,12 +31,12 @@ public class IntGrid : Grid
             {
                 if (States[j][i] != state[i]) break;
                 gen += States[j][i] ? 1 : -1;
+                if (j == 0) gen = Mathf.Max(0, gen);
             }
             current[i] = gen;
         }
 
         States.RemoveAt(States.Count - 1);
-        print(current[0]);
     }
 
     protected override Color GetColor(int i)
