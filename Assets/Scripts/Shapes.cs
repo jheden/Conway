@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System;
 using UnityEngine;
-using JetBrains.Annotations;
-using UnityEditor.Tilemaps;
 
 public sealed class Shapes
 {
@@ -88,14 +86,6 @@ public sealed class Shapes
 
     #region Shape definitions
 
-    #region Helpers
-    public IShape Neighbors = new(new int[,] {
-        { 1, 1, 1 },
-        { 1, 0, 1 },
-        { 1, 1, 1 }
-    });
-    #endregion
-
     #region Still lifes
     public IShape Beehive = new(new int[,] {
         { 0, 1, 1, 0 },
@@ -172,10 +162,21 @@ public sealed class Shapes
     });
     #endregion
 
+    #region Methuselahs
     public IShape Acorn = new(new int[,] {
         { 0, 1, 0, 0, 0, 0, 0 },
         { 0, 0, 0, 1, 0, 0, 0 },
         { 1, 1, 0, 0, 1, 1, 1 }
     });
+    #endregion
+
+    #region Helpers
+    public IShape Neighbors = new(new int[,] {
+        { 1, 1, 1 },
+        { 1, 0, 1 },
+        { 1, 1, 1 }
+    });
+    #endregion
+
     #endregion
 }

@@ -1,7 +1,6 @@
 using System.Linq;
 using System;
 using UnityEngine;
-using Unity.VisualScripting;
 
 public class IntGrid : Grid
 {
@@ -26,14 +25,20 @@ public class IntGrid : Grid
 
         for (int i = 0; i < Length; i++)
         {
+            if (current[i] == 0) continue;
+
+            bool broke = false;
             int gen = 0;
             for (int j = States.Count - 1; j >= 0; j--)
             {
-                if (States[j][i] != state[i]) break;
+                if (States[j][i] != state[i])
+                {
+                    broke = true;
+                    break;
+                }
                 gen += States[j][i] ? 1 : -1;
-                if (j == 0) gen = Mathf.Max(0, gen);
             }
-            current[i] = gen;
+            current[i] = broke ? gen : Mathf.Max(0, gen);
         }
 
         States.RemoveAt(States.Count - 1);

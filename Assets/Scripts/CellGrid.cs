@@ -1,5 +1,4 @@
 using System.Linq;
-using System.Collections.Generic;
 using System;
 using UnityEngine;
 
@@ -27,16 +26,22 @@ public class CellGrid : Grid
 
         for (int i = 0; i < Length; i++)
         {
+            if (current[i] == 0) continue;
+
+            bool broke = false;
             int gen = 0;
             for (int j = States.Count - 1; j >= 0; j--)
             {
-                if (States[j][i] != state[i]) break;
+                if (States[j][i] != state[i])
+                {
+                    broke = true;
+                    break;
+                }
                 gen += States[j][i] ? 1 : -1;
-                if (j == 0) gen = Mathf.Max(0, gen);
             }
 
             current[i].Alive = state[i];
-            current[i].Duration = gen;
+            current[i].Duration = broke ? gen : Mathf.Max(0, gen);
         }
 
         States.RemoveAt(States.Count - 1);
