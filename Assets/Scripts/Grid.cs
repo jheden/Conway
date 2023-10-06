@@ -55,6 +55,11 @@ public abstract class Grid : MonoBehaviour
     protected List<Vector3> _vertices = new();
     protected Mesh _mesh;
     protected float _nextUpdate;
+
+    //public ComputeShader shader;
+    //protected int _kernel;
+    //protected ComputeBuffer _buffer;
+    //protected int[] _data;
     #endregion
 
     #region Abstract methods
@@ -73,6 +78,12 @@ public abstract class Grid : MonoBehaviour
 
         Resolution = _resolution;
         Size = _size;
+
+        //_kernel = shader.FindKernel("GetGen");
+        //_buffer = new(Length, sizeof(int));
+        //shader.SetBuffer(_kernel, "Out", _buffer);
+        //shader.SetInt("Width", Resolution.x);
+        //_data = new int[Length];
     }
 
     private void Update()

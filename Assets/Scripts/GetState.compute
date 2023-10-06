@@ -1,0 +1,13 @@
+#pragma kernel GetGen
+
+uint Width;
+//bool states[][];
+//int gen;
+
+RWBuffer<int> Out;
+
+[numthreads(32, 32, 1)]
+void GetGen(uint3 id : SV_DispatchThreadID)
+{
+    Out[id.x + id.y * Width] = 1;
+}

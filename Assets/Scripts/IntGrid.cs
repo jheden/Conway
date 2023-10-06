@@ -23,23 +23,35 @@ public class IntGrid : Grid
     {
         bool[] state = States.Last();
 
+        //bool[][] states = States.ToArray();
+        int sign;
+        int gen;
+
         for (int i = 0; i < Length; i++)
         {
             if (current[i] == 0) continue;
 
-            bool broke = false;
-            int gen = 0;
-            for (int j = States.Count - 1; j >= 0; j--)
-            {
-                if (States[j][i] != state[i])
-                {
-                    broke = true;
-                    break;
-                }
-                gen += States[j][i] ? 1 : -1;
-            }
-            current[i] = broke ? gen : Mathf.Max(0, gen);
+            sign = (int)Mathf.Sign(current[i]);
+            current[i] -= sign;
+            //if (current[i] == 0) current[i] -= sign;
+
+            //gen = 0;
+
+            //for (int j = States.Count - 1; j >= 0; j--)
+            //    if (States[j][i] != state[i])
+            //    {
+            //        gen = States.Count - j;
+            //        break;
+            //    }
+
+            //current[i] = gen * (state[i] ? 1 : -1);
+
+            current[i] *= sign;
         }
+
+        //shader.Dispatch(_kernel, Resolution.x / 32, Resolution.y / 32, 1);
+        //_buffer.GetData(_data);
+        //current = _data;
 
         States.RemoveAt(States.Count - 1);
     }

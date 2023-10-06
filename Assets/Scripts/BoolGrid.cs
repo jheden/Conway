@@ -27,7 +27,20 @@ public class BoolGrid : Grid
 
     protected override Color GetColor(int i)
     {
-        return current[i] ? Color.HSVToRGB(1f / 36, 1f, 1f) : Color.black;
+        int gen = 0;
+
+        for (int j = States.Count - 1; j >= 0; j--)
+            if (States[j][i] != current[i])
+            {
+                gen = States.Count - j;
+                break;
+            }
+
+        gen *= (current[i] ? 1 : -1);
+
+        if (gen == 0) return Color.black;
+        if (gen > 0) return Color.HSVToRGB(Mathf.Lerp(1f / 36, 2f / 3, (float)gen / 50), 1f, 1f);
+        return Color.HSVToRGB(1f / 36, 1f, Mathf.Lerp(1f, 0f, -(float)gen / 10));
     }
 
     protected override bool GetCurrent(int i)
