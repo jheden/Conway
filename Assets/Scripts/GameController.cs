@@ -24,6 +24,7 @@ public class GameController : MonoBehaviour
         actions.Enable();
 
         Time.timeScale = 0;
+        Cursor.visible = false;
     }
 
     private void Start()

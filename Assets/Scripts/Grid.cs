@@ -32,7 +32,7 @@ public abstract class Grid : MonoBehaviour
             UpdateTriangles();
         }
     }
-    private Vector2Int _resolution = new(512, 512);
+    private Vector2Int _resolution = new(256, 256);
 
     public Vector2 Size
     {
@@ -81,7 +81,7 @@ public abstract class Grid : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0)) ClickShape();
         if (Input.GetMouseButton(1)) ClickDraw();
-        if (Input.GetMouseButtonDown(2)) ClickFill();
+        if (Input.GetMouseButtonDown(2)) Fill(20);
 
         if (Time.time > _nextUpdate)
         {
@@ -100,10 +100,11 @@ public abstract class Grid : MonoBehaviour
         SetCurrent((int)position.x + (int)position.y * Resolution.x, true);
     }
 
-    public void ClickFill()
+    public void Fill(int percent)
     {
+        percent = Mathf.Clamp(percent, 0, 100);
         for (int i = 0; i < Length; i++)
-            if (Random.Range(0, 100) < 20)
+            if (Random.Range(0, 100) < percent)
                 SetCurrent(i, true);
     }
 
