@@ -32,7 +32,7 @@ public abstract class Grid : MonoBehaviour
             UpdateTriangles();
         }
     }
-    private Vector2Int _resolution = new(256, 256);
+    private Vector2Int _resolution = new(512, 512);
 
     public Vector2 Size
     {

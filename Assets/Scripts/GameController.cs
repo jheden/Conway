@@ -8,6 +8,7 @@ public class GameController : MonoBehaviour
     private float zoomStep = 3f;
     private float timeScale = 1f;
     public Grid grid;
+    public Texture2D introText;
 
     private InputActionAsset actions;
     public float ZoomInput { get; private set; }
@@ -23,6 +24,11 @@ public class GameController : MonoBehaviour
         actions.Enable();
 
         Time.timeScale = 0;
+    }
+
+    private void Start()
+    {
+        grid.AddShape(grid.Resolution.x / 2, grid.Resolution.y / 2, new Shape(introText));
     }
 
     private void OnPause(InputAction.CallbackContext ctx)
