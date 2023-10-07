@@ -110,10 +110,10 @@ public abstract class Grid : MonoBehaviour
     public void ClickShape()
     {
         var position = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition) / Increments + Resolution / 2;
-        AddShape((int)position.x, (int)position.y, Shapes.Instance.Glider);
+        AddShape((int)position.x, (int)position.y, Shapes.Instance.Pulsar);
     }
 
-    public void AddShape(int x, int y, IShape shape)
+    public void AddShape(int x, int y, Shape shape)
     {
         foreach (int position in GetIndices(x, y, shape))
             SetCurrent(position, true);
@@ -124,7 +124,7 @@ public abstract class Grid : MonoBehaviour
         return Enumerable.Range(0, Length).Where(i => GetCurrent(i));
     }
 
-    protected List<int> GetIndices(int x, int y, IShape shape)
+    protected List<int> GetIndices(int x, int y, Shape shape)
     {
         _indices.Clear();
 
@@ -145,7 +145,7 @@ public abstract class Grid : MonoBehaviour
         {
             int neighbours = 0;
 
-            foreach (int neighbour in GetIndices(i % Resolution.x, i / Resolution.x, Shapes.Instance.Neighbors))
+            foreach (int neighbour in GetIndices(i % Resolution.x, i / Resolution.x, Shapes.Instance.Neighbourhood))
                 if (Last[neighbour]) neighbours++;
 
             SetCurrent(i, (Last[i] ? 2 : 3) <= neighbours && neighbours <= 3);
