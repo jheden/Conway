@@ -11,17 +11,14 @@ public class GameController : MonoBehaviour
     public Texture2D introText;
 
     private InputActionAsset actions;
-    public float ZoomInput { get; private set; }
-
+    public float ZoomInput { get; set; }
+    public static GameController Instance { get; private set; }
     private void Awake()
     {
-        actions = GetComponent<PlayerInput>().actions;
-        actions["Pause"].started += OnPause;
-        actions["SpeedDown"].started += OnSpeedDown;
-        actions["SpeedUp"].started += OnSpeedUp;
-        actions["Zoom"].started += ctx => ZoomInput = ctx.ReadValue<float>() * -zoomStep;
-        actions["Zoom"].canceled += ctx => ZoomInput = 0f;
-        actions.Enable();
+        if (Instance != null && Instance != this)
+            Destroy(this);
+        else
+            Instance = this;
 
         Time.timeScale = 0;
         Cursor.visible = false;
@@ -32,7 +29,7 @@ public class GameController : MonoBehaviour
         grid.AddShape(grid.Resolution.x / 2, grid.Resolution.y / 2, new Shape(introText));
     }
 
-    private void OnPause(InputAction.CallbackContext ctx)
+    public void Pause()
     {
         if (Time.timeScale == 0)
             Time.timeScale = timeScale;
@@ -43,13 +40,13 @@ public class GameController : MonoBehaviour
         }
     }
 
-    private void OnSpeedDown(InputAction.CallbackContext ctx)
+    public void SpeedDown()
     {
         Time.timeScale /= 2;
         if (Time.timeScale < 1f / 16) Time.timeScale = 0;
     }
 
-    private void OnSpeedUp(InputAction.CallbackContext ctx)
+    public void SpeedUp()
     {
         Time.timeScale = Mathf.Clamp(Time.timeScale * 2, 1f / 16, 16f);
     }
@@ -57,6 +54,6 @@ public class GameController : MonoBehaviour
     private void Update()
     {
         if (ZoomInput != 0f)
-            Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize + ZoomInput * Time.unscaledDeltaTime, minZoom, maxZoom);
+            Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize + ZoomInput * -zoomStep * Time.unscaledDeltaTime, minZoom, maxZoom);
     }
 }

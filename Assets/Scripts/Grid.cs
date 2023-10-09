@@ -17,7 +17,7 @@ public abstract class Grid : MonoBehaviour
         set => States.Add((bool[])value.Clone());
     }
 
-    public bool rewind;
+    public bool Rewind { get; set; }
 
     public Vector2Int Resolution
     {
@@ -77,15 +77,13 @@ public abstract class Grid : MonoBehaviour
 
     private void Update()
     {
-        rewind = Input.GetKey(KeyCode.Backspace);
-
-        if (Input.GetMouseButtonDown(0)) ClickShape();
-        if (Input.GetMouseButton(1)) ClickDraw();
-        if (Input.GetMouseButtonDown(2)) Fill(20);
+        //if (Input.GetMouseButtonDown(0)) ClickShape();
+        //if (Input.GetMouseButton(1)) ClickDraw();
+        //if (Input.GetMouseButtonDown(2)) Fill(20);
 
         if (Time.time > _nextUpdate)
         {
-            if (rewind) try { LoadState(); } catch { }
+            if (Rewind) try { LoadState(); } catch { }
             else UpdateCells();
             _nextUpdate = Time.time + 1f / 16;
         }
