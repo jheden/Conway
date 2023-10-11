@@ -29,6 +29,6 @@ public class ShapeSelector : MonoBehaviour
         _mesh = GetComponent<MeshController>();
         _mesh.Size = new Vector2(3, 3);
 
-        Shape = Shapes.Instance.Acorn.RotateRight;
+        Shape = Shapes.Instance.Acorn;
     }
 }
