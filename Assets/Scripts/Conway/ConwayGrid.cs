@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static Shapes;
 
 [RequireComponent(typeof(MeshController))]
 public abstract class ConwayGrid : MonoBehaviour
@@ -35,14 +34,13 @@ public abstract class ConwayGrid : MonoBehaviour
     #endregion
 
     #region Internal variables
-    protected List<Color32> _colors = new();
     protected List<int> _indices = new();
     protected MeshController _mesh;
     protected float _nextUpdate;
     #endregion
 
     #region Abstract methods
-    protected abstract Color GetColor(int i);
+    protected abstract Color32 GetColor(int i);
     protected abstract bool GetCurrent(int i);
     protected abstract void ResetGrid();
     protected abstract void LoadState();
@@ -51,12 +49,12 @@ public abstract class ConwayGrid : MonoBehaviour
     #endregion
 
     #region Unity methods
-    void Awake()
+    private void Start()
     {
         _mesh = GetComponent<MeshController>();
 
-        Resolution = new Vector2Int(256, 256);
         Size = new Vector2(20, 20);
+        Resolution = new Vector2Int(256, 256);
     }
 
     private void Update()
@@ -133,14 +131,7 @@ public abstract class ConwayGrid : MonoBehaviour
 
     protected void UpdateColors()
     {
-        _mesh.Colors.Clear();
-
         for (int i = 0; i < Length; i++)
-        {
-            var color = GetColor(i);
-
-            for (int j = 0; j < 4; j++)
-                _mesh.Colors.Add(color);
-        }
+            _mesh.SetPixel(i, GetColor(i));
     }
 }

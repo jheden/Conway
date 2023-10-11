@@ -6,7 +6,8 @@ using UnityEngine;
 public class MeshController : MonoBehaviour
 {
     #region Properties
-    public List<Color32> Colors { get; set; } = new();
+    public Color32[,] Colors { get; private set; }
+
     public Vector2 Increment { get; private set; } = new();
 
     public Vector2Int Resolution
@@ -16,6 +17,7 @@ public class MeshController : MonoBehaviour
         {
             _resolution = value;
             Increment = Size / value;
+            Colors = new Color32[Resolution.x, Resolution.y];
             UpdateVertices();
             UpdateTriangles();
         }
@@ -36,6 +38,7 @@ public class MeshController : MonoBehaviour
     #endregion
 
     #region Internal variables
+    private List<Color32> _colors = new();
     private List<int> _triangles = new();
     private List<Vector3> _vertices = new();
     private Mesh _mesh;
@@ -46,13 +49,13 @@ public class MeshController : MonoBehaviour
     {
         GetComponent<MeshFilter>().mesh = _mesh = new() { indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
 
-        Resolution = _resolution;
         Size = _size;
+        Resolution = _resolution;
     }
 
     void LateUpdate()
     {
-        _mesh.colors32 = Colors.ToArray();
+        UpdateColors();
     }
     #endregion
 
@@ -77,6 +80,7 @@ public class MeshController : MonoBehaviour
 
     private void UpdateVertices()
     {
+        _mesh.Clear();
         _vertices.Clear();
 
         var halfSize = Size / 2;
@@ -96,11 +100,29 @@ public class MeshController : MonoBehaviour
         _mesh.vertices = _vertices.ToArray();
     }
 
+    private void UpdateColors()
+    {
+        _colors.Clear();
+
+        for (int y = 0;y < Resolution.y; y++)
+            for (int x = 0; x < Resolution.x; x++)
+                for (int j = 0; j < 4; j++)
+                    _colors.Add(Colors[x, y]);
+
+        _mesh.colors32 = _colors.ToArray();
+    }
+
     public void SetPixel(int x, int y, Color32 color)
     {
-        x = Mathf.Clamp(x, 0, Resolution.x);
-        y = Mathf.Clamp(y, 0, Resolution.y);
-        Colors[x + y * Resolution.x] = color;
+        Colors[
+            (x + Resolution.x) % Resolution.x,
+            (y + Resolution.y) % Resolution.y
+        ] = color;
+    }
+
+    public void SetPixel(int i, Color32 color)
+    {
+        Colors[i % Resolution.x, (i / Resolution.x) % Resolution.y] = color;
     }
     #endregion
 }

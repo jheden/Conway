@@ -25,7 +25,7 @@ public class BoolGrid : ConwayGrid
         States.RemoveAt(States.Count - 1);
     }
 
-    protected override Color GetColor(int i)
+    protected override Color32 GetColor(int i)
     {
         return current[i] ? Color.HSVToRGB(1f / 36, 1f, 1f) : Color.black;
     }

@@ -144,7 +144,7 @@ public class Shape
 
             for (int x = 0; x < Width; x++)
                 for (int y = 0; y < Height; y++)
-                    temp[x, y] = Data[Height - x - 1, y];
+                    temp[x, y] = Data[Width - x - 1, y];
 
             return new Shape(temp);
         }
@@ -182,9 +182,9 @@ public class Shape
     #region Compound
     public Shape AntiTranspose { get => Transpose.FlipX.FlipY; }
 
-    public Shape RotateRight { get => Transpose.FlipX; }
+    public Shape RotateLeft { get => Transpose.FlipX; }
 
-    public Shape RotateLeft { get => FlipX.Transpose; }
+    public Shape RotateRight { get => FlipX.Transpose; }
 
     public Shape RotateTwice { get => FlipX.FlipY; }
     #endregion

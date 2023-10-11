@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class GameController : MonoBehaviour
 {
@@ -9,8 +8,8 @@ public class GameController : MonoBehaviour
     private float timeScale = 1f;
     public ConwayGrid grid;
     public Texture2D introText;
+    public Texture2D introText2;
 
-    private InputActionAsset actions;
     public float ZoomInput { get; set; }
     public static GameController Instance { get; private set; }
     private void Awake()
@@ -26,7 +25,12 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
-        grid.AddShape(grid.Resolution.x / 2, grid.Resolution.y / 2, new Shape(introText));
+    }
+
+    private void DisplayIntro()
+    {
+        grid.AddShape(grid.Resolution.x / 2, grid.Resolution.y / 4, new Shape(introText));
+        grid.AddShape(grid.Resolution.x / 2, grid.Resolution.y / 4 * 3, new Shape(introText2));
     }
 
     public void Pause()

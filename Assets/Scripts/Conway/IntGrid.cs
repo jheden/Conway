@@ -44,7 +44,7 @@ public class IntGrid : ConwayGrid
         States.RemoveAt(States.Count - 1);
     }
 
-    protected override Color GetColor(int i)
+    protected override Color32 GetColor(int i)
     {
         if (current[i] == 0) return Color.black;
         if (current[i] > 0) return Color.HSVToRGB(Mathf.Lerp(1f / 36, 2f / 3, (float)current[i] / 50), 1f, 1f);
