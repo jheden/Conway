@@ -2,7 +2,7 @@ using System.Linq;
 using System;
 using UnityEngine;
 
-public class IntGrid : Grid
+public class IntGrid : ConwayGrid
 {
     private int[] current;
 

@@ -7,7 +7,7 @@ public class GameController : MonoBehaviour
     private int maxZoom = 10;
     private float zoomStep = 3f;
     private float timeScale = 1f;
-    public Grid grid;
+    public ConwayGrid grid;
     public Texture2D introText;
 
     private InputActionAsset actions;

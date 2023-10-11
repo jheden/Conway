@@ -2,7 +2,7 @@ using System.Linq;
 using System;
 using UnityEngine;
 
-public class BoolGrid : Grid
+public class BoolGrid : ConwayGrid
 {
     private bool[] current;
 

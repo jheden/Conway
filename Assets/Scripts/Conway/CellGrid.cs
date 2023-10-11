@@ -2,7 +2,7 @@ using System.Linq;
 using System;
 using UnityEngine;
 
-public class CellGrid : Grid
+public class CellGrid : ConwayGrid
 {
     private Cell[] current;
 

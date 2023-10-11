@@ -3,12 +3,10 @@ using System.Linq;
 using UnityEngine;
 using static Shapes;
 
-[RequireComponent(typeof(MeshRenderer))]
-[RequireComponent(typeof(MeshFilter))]
-public abstract class Grid : MonoBehaviour
+[RequireComponent(typeof(MeshController))]
+public abstract class ConwayGrid : MonoBehaviour
 {
     #region Properties
-    protected Vector2 Increments { get; private set; }
     protected int Length { get; private set; }
     protected List<bool[]> States { get; } = new();
     protected abstract int[] Durations { get; }
@@ -19,41 +17,27 @@ public abstract class Grid : MonoBehaviour
 
     public bool Rewind { get; set; }
 
-    public Vector2Int Resolution
-    {
-        get => _resolution;
+    protected Vector2 Increments { get => _mesh.Increment; }
+    public Vector2Int Resolution {
+        get => _mesh.Resolution;
         set
         {
-            _resolution = value;
-            Increments = Size / value;
+            _mesh.Resolution = value;
             Length = value.x * value.y;
             ResetGrid();
-            UpdateVertices();
-            UpdateTriangles();
         }
     }
-    private Vector2Int _resolution = new(256, 256);
 
-    public Vector2 Size
-    {
-        get => _size;
-        set
-        {
-            _size = value;
-            Increments = value / Resolution;
-            UpdateVertices();
-        }
+    public Vector2 Size {
+        get => _mesh.Size;
+        set => _mesh.Size = value;
     }
-    private Vector2 _size = new(20, 20);
     #endregion
 
     #region Internal variables
-    protected Color32[] __colors;
     protected List<Color32> _colors = new();
     protected List<int> _indices = new();
-    protected List<int> _triangles = new();
-    protected List<Vector3> _vertices = new();
-    protected Mesh _mesh;
+    protected MeshController _mesh;
     protected float _nextUpdate;
     #endregion
 
@@ -69,10 +53,10 @@ public abstract class Grid : MonoBehaviour
     #region Unity methods
     void Awake()
     {
-        GetComponent<MeshFilter>().mesh = _mesh = new() { indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
+        _mesh = GetComponent<MeshController>();
 
-        Resolution = _resolution;
-        Size = _size;
+        Resolution = new Vector2Int(256, 256);
+        Size = new Vector2(20, 20);
     }
 
     private void Update()
@@ -149,55 +133,14 @@ public abstract class Grid : MonoBehaviour
 
     protected void UpdateColors()
     {
-        _colors.Clear();
+        _mesh.Colors.Clear();
 
         for (int i = 0; i < Length; i++)
         {
             var color = GetColor(i);
 
             for (int j = 0; j < 4; j++)
-                _colors.Add(color);
+                _mesh.Colors.Add(color);
         }
-
-        _mesh.colors32 = _colors.ToArray();
-    }
-
-    protected void UpdateTriangles()
-    {
-        _triangles.Clear();
-
-        for (int i = 0; i < Length * 4; i+=4)
-        {
-            _triangles.Add(i);
-            _triangles.Add(i + 2);
-            _triangles.Add(i + 1);
-
-            _triangles.Add(i + 3);
-            _triangles.Add(i + 1);
-            _triangles.Add(i + 2);
-        }
-
-        _mesh.triangles = _triangles.ToArray();
-    }
-
-    protected void UpdateVertices()
-    {
-        _vertices.Clear();
-
-        var halfSize = Size / 2;
-
-        for (int y = 0; y < Resolution.y; y++)
-            for (int x = 0; x < Resolution.x; x++)
-            {
-                var xPos = x * Increments.x - halfSize.x;
-                var yPos = y * Increments.y - halfSize.y;
-
-                _vertices.Add(new Vector3(xPos, yPos));
-                _vertices.Add(new Vector3(xPos + Increments.x, yPos));
-                _vertices.Add(new Vector3(xPos, yPos + Increments.y));
-                _vertices.Add(new Vector3(xPos + Increments.x, yPos + Increments.y));
-            }
-
-        _mesh.vertices = _vertices.ToArray();
     }
 }
