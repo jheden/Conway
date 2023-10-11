@@ -77,10 +77,6 @@ public abstract class Grid : MonoBehaviour
 
     private void Update()
     {
-        //if (Input.GetMouseButtonDown(0)) ClickShape();
-        //if (Input.GetMouseButton(1)) ClickDraw();
-        //if (Input.GetMouseButtonDown(2)) Fill(20);
-
         if (Time.time > _nextUpdate)
         {
             if (Rewind) try { LoadState(); } catch { }
