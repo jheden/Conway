@@ -436,16 +436,74 @@ MonoBehaviour:
     _serializedList:
     - Key: Acorn
       Value: {fileID: 2800000, guid: 2e29a82528566574e855f6cd1377e0ff, type: 3}
-  _arrows:
+  _font:
     _serializedList:
-    - Key: Horizontal
-      Value: {fileID: 2800000, guid: 230f4864b8eb7924681d1812bd930c13, type: 3}
-    - Key: Vertical
-      Value: {fileID: 2800000, guid: ec5ed03ce2659af42b521593e364034a, type: 3}
+    - Key: A
+      Value: {fileID: 2800000, guid: 6f81acab8d22c8044aecc2ad772a5b6e, type: 3}
+    - Key: B
+      Value: {fileID: 2800000, guid: a2d7718dbf8e09a4aae871f7a98c1f95, type: 3}
+    - Key: C
+      Value: {fileID: 2800000, guid: 1718709524e4f474fb14006db54c1a5c, type: 3}
+    - Key: D
+      Value: {fileID: 2800000, guid: 82a7157224260f544a30b7b911a147f0, type: 3}
+    - Key: E
+      Value: {fileID: 2800000, guid: 58e9bebb9bf9c04488aae93c36bfdc72, type: 3}
+    - Key: F
+      Value: {fileID: 2800000, guid: 3c7c254cc65e0bf4a8e0e0ae3aae3ae9, type: 3}
+    - Key: G
+      Value: {fileID: 2800000, guid: 9bcb655cc7bd08e4ea965f95e6f106d0, type: 3}
+    - Key: H
+      Value: {fileID: 2800000, guid: dec6461d1ec7f694386a58ed77778613, type: 3}
+    - Key: I
+      Value: {fileID: 2800000, guid: ed351162285217e409efd51ba190e5e7, type: 3}
+    - Key: J
+      Value: {fileID: 2800000, guid: a096abdc2758e634c82b25faf9e551f7, type: 3}
+    - Key: K
+      Value: {fileID: 2800000, guid: bb19af805a846644e8ceee196d182f27, type: 3}
+    - Key: L
+      Value: {fileID: 2800000, guid: 43c334724f9241841b461e3fbf97c9af, type: 3}
+    - Key: M
+      Value: {fileID: 2800000, guid: 841aed6ba953e9343a9fd62715631d9d, type: 3}
+    - Key: N
+      Value: {fileID: 2800000, guid: bf16181d2aff8e94b8738587f353023a, type: 3}
+    - Key: O
+      Value: {fileID: 2800000, guid: 269725193c0fba9439bbae7037c4e80d, type: 3}
+    - Key: P
+      Value: {fileID: 2800000, guid: 326d3a7cbce75f940be0486d8e49b623, type: 3}
+    - Key: Q
+      Value: {fileID: 2800000, guid: 656a753361514554e990e64c39ac924b, type: 3}
+    - Key: R
+      Value: {fileID: 2800000, guid: a83db4845f8e60645817d974937ede53, type: 3}
+    - Key: S
+      Value: {fileID: 2800000, guid: 781f7b7fbd897374599da810f995d1eb, type: 3}
+    - Key: T
+      Value: {fileID: 2800000, guid: 9bed32d380f356f45b504880fdc8c2e2, type: 3}
+    - Key: U
+      Value: {fileID: 2800000, guid: c9f16981724874140a5648b18ca50b26, type: 3}
+    - Key: V
+      Value: {fileID: 2800000, guid: 318e3db53064d34418dff3d16e4d592f, type: 3}
+    - Key: W
+      Value: {fileID: 2800000, guid: e30bbc1e193f47f4888d62049066af5a, type: 3}
+    - Key: X
+      Value: {fileID: 2800000, guid: 829096d45547b304d879b9e78350362e, type: 3}
+    - Key: Y
+      Value: {fileID: 2800000, guid: e7266b62ff23e8e4f8f4719893f547c1, type: 3}
+    - Key: Z
+      Value: {fileID: 2800000, guid: 0706accb441c20e44a43959ee47c04d5, type: 3}
   _helpers:
     _serializedList:
     - Key: Neighbourhood
       Value: {fileID: 2800000, guid: 8d41f3aef80d8b04fbccfa21dd725c9b, type: 3}
+  _ui:
+    _serializedList:
+    - Key: FlipX
+      Value: {fileID: 2800000, guid: 230f4864b8eb7924681d1812bd930c13, type: 3}
+    - Key: FlipY
+      Value: {fileID: 2800000, guid: ec5ed03ce2659af42b521593e364034a, type: 3}
+    - Key: RotateLeft
+      Value: {fileID: 2800000, guid: e2e363f9fe8c6ef41b730a218a68baea, type: 3}
+    - Key: RotateRight
+      Value: {fileID: 2800000, guid: b53a57cdd0644b7468a39acd4a381608, type: 3}
 --- !u!64 &1407677007
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -662,7 +720,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 10
+  orthographic size: 5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2

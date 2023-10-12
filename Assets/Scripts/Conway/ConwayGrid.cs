@@ -59,7 +59,7 @@ public abstract class ConwayGrid : MonoBehaviour
     {
         _mesh = GetComponent<MeshController>();
 
-        Size = new Vector2(20, 20);
+        Size = new Vector2(10, 10);
         Resolution = new Vector2Int(256, 256);
     }
 
@@ -76,29 +76,35 @@ public abstract class ConwayGrid : MonoBehaviour
     }
     #endregion
 
+    #region Draw methods
+    public void Clear()
+    {
+        _mesh.Clear();
+    }
+
     public void Fill(int percent)
     {
         percent = Mathf.Clamp(percent, 0, 100);
         for (int i = 0; i < Length; i++)
-            if (Random.Range(0, 100) < percent)
-                SetCurrent(i, true);
+            SetCurrent(i, Random.Range(0, 100) < percent);
     }
 
-    public void Click(int pixel)
-    {
-        AddShape(pixel, ShapeSelector.Instance.Shape);
-    }
-
-    public void AddShape(int x, int y, Shape shape)
+    public void DrawShape(int x, int y, Shape shape)
     {
         foreach (int position in GetIndices(x, y, shape))
             SetCurrent(position, true);
     }
 
-    public void AddShape(int i, Shape shape)
+    public void DrawShape(int i, Shape shape)
     {
         foreach (int position in GetIndices(i % Resolution.x, i / Resolution.y, shape))
             SetCurrent(position, true);
+    }
+    #endregion
+
+    public void Click(int pixel)
+    {
+        DrawShape(pixel, ShapeSelector.Instance.Shape);
     }
 
     protected IEnumerable<int> GetAlive()
@@ -125,12 +131,12 @@ public abstract class ConwayGrid : MonoBehaviour
 
         for (int i = 0; i < Length; i++)
         {
-            int neighbours = 0;
+            int neighbors = 0;
 
-            foreach (int neighbour in GetIndices(i % Resolution.x, i / Resolution.x, Shapes.Instance.Helpers.Neighbourhood))
-                if (Last[neighbour]) neighbours++;
+            foreach (int neighbor in GetIndices(i % Resolution.x, i / Resolution.x, Shapes.Instance.Helpers.Neighborhood))
+                if (Last[neighbor]) neighbors++;
 
-            SetCurrent(i, (Last[i] ? 2 : 3) <= neighbours && neighbours <= 3);
+            SetCurrent(i, (Last[i] ? 2 : 3) <= neighbors && neighbors <= 3);
         }
     }
 

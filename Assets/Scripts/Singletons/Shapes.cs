@@ -14,19 +14,19 @@ public sealed class Shapes : MonoBehaviour
             Destroy(this);
         else
             Instance = this;
+
+        LoadTextures();
     }
     #endregion
 
-    private void Start()
-    {
-        LoadTextures();
-    }
-
+    #region Properties
     public dynamic Conway { get; private set; } = new ExpandoObject();
-    public dynamic Arrows { get; private set; } = new ExpandoObject();
     public dynamic Helpers { get; private set; } = new ExpandoObject();
+    public dynamic Font { get; private set; } = new ExpandoObject();
+    public dynamic UI { get; private set; } = new ExpandoObject();
+    #endregion
 
-    #region Shape definitions
+    #region Shape dictionaries
     [SerializeField, SerializedDictionary("Name", "Texture")]
     private SerializedDictionary<string, Texture2D> _conwayStillLifes;
 
@@ -40,31 +40,38 @@ public sealed class Shapes : MonoBehaviour
     private SerializedDictionary<string, Texture2D> _conwayMetuselahs;
 
     [SerializeField, SerializedDictionary("Name", "Texture")]
-    private SerializedDictionary<string, Texture2D> _arrows;
+    private SerializedDictionary<string, Texture2D> _font;
 
     [SerializeField, SerializedDictionary("Name", "Texture")]
     private SerializedDictionary<string, Texture2D> _helpers;
+
+    [SerializeField, SerializedDictionary("Name", "Texture")]
+    private SerializedDictionary<string, Texture2D> _ui;
     #endregion
 
     private void LoadTextures()
     {
-        var conway = Conway as IDictionary<string, object>;
+        var tmp = Conway as IDictionary<string, object>;
         foreach (KeyValuePair<string, Texture2D> item in _conwayStillLifes)
-            conway[item.Key] = new Shape(item.Value);
+            tmp[item.Key] = new Shape(item.Value);
         foreach (KeyValuePair<string, Texture2D> item in _conwayOscillators)
-            conway[item.Key] = new Shape(item.Value);
+            tmp[item.Key] = new Shape(item.Value);
         foreach (KeyValuePair<string, Texture2D> item in _conwaySpaceships)
-            conway[item.Key] = new Shape(item.Value);
+            tmp[item.Key] = new Shape(item.Value);
         foreach (KeyValuePair<string, Texture2D> item in _conwayMetuselahs)
-            conway[item.Key] = new Shape(item.Value);
+            tmp[item.Key] = new Shape(item.Value);
 
-        var arrows = Arrows as IDictionary<string, object>;
-        foreach (KeyValuePair<string, Texture2D> item in _arrows)
-            arrows[item.Key] = new Shape(item.Value);
+        tmp = Font as IDictionary<string, object>;
+        foreach (KeyValuePair<string, Texture2D> item in _font)
+            tmp[item.Key] = new Shape(item.Value);
 
-        var helpers = Helpers as IDictionary<string, object>;
+        tmp = Helpers as IDictionary<string, object>;
         foreach (KeyValuePair<string, Texture2D> item in _helpers)
-            helpers[item.Key] = new Shape(item.Value);
+            tmp[item.Key] = new Shape(item.Value);
+
+        tmp = UI as IDictionary<string, object>;
+        foreach (KeyValuePair<string, Texture2D> item in _ui)
+            tmp[item.Key] = new Shape(item.Value);
     }
 }
 

@@ -49,9 +49,7 @@ public class MeshController : MonoBehaviour
     {
         GetComponent<MeshFilter>().mesh = _mesh = new() { indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
         TryGetComponent<MeshCollider>(out _collider);
-
-        Size = _size;
-        Resolution = _resolution;
+        Colors = new Color32[Resolution.x, Resolution.y];
     }
 
     void LateUpdate()
@@ -61,6 +59,18 @@ public class MeshController : MonoBehaviour
     #endregion
 
     #region Public methods
+    public void Clear(Color32 color)
+    {
+        for (int y = 0; y < Resolution.y; y++)
+            for (int x = 0; x < Resolution.x; x++)
+                Colors[x, y] = color;
+    }
+
+    public void Clear()
+    {
+        Clear(Color.black);
+    }
+
     public void SetPixel(int x, int y, Color32 color)
     {
         Colors[
@@ -78,6 +88,7 @@ public class MeshController : MonoBehaviour
     #region Private methods
     private void UpdateMesh()
     {
+        _mesh.Clear();
         UpdateVertices();
         UpdateTriangles();
         UpdateCollider();
@@ -103,7 +114,6 @@ public class MeshController : MonoBehaviour
 
     private void UpdateVertices()
     {
-        _mesh.Clear();
         _vertices.Clear();
 
         var halfSize = Size / 2;
@@ -138,7 +148,13 @@ public class MeshController : MonoBehaviour
                 for (int j = 0; j < 4; j++)
                     _colors.Add(Colors[x, y]);
 
-        _mesh.colors32 = _colors.ToArray();
+        try {
+            _mesh.colors32 = _colors.ToArray();
+        }
+        catch {
+            UpdateMesh();
+            _mesh.colors32 = _colors.ToArray();
+        }
     }
     #endregion
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 [RequireComponent(typeof(MeshController))]
 [RequireComponent(typeof(MeshCollider))]
@@ -76,7 +77,7 @@ public class ShapeSelector : MonoBehaviour
     public void OnCameraResize(Rect bounds)
     {
         float aspect = bounds.width / bounds.height;
-        Size = new((bounds.width - bounds.height), bounds.height);
+        Size = new((bounds.width - bounds.height) / 2, bounds.height);
         Position = new(bounds.xMin + Size.x / 2, 0);
         Resolution = new(160, (int)(160 * aspect));
     }
@@ -90,25 +91,27 @@ public class ShapeSelector : MonoBehaviour
     {
         if (x < 5 && y > Resolution.y - 5) Shape = Shape.RotateLeft;
         else if (x > Resolution.x - 5 && y > Resolution.y - 5) Shape = Shape.RotateRight;
-        else if (y < Shapes.Instance.Arrows.Horizontal.Height) Shape = Shape.FlipX;
-        else if (x < Shapes.Instance.Arrows.Horizontal.Width) Shape = Shape.FlipY;
+        else if (y < Shapes.Instance.UI.FlipX.Height) Shape = Shape.FlipX;
+        else if (x < Shapes.Instance.UI.FlipY.Width) Shape = Shape.FlipY;
     }
 
     private void DrawUI()
     {
-        DrawArrowHorizontal();
-        DrawArrowVertical();
+        DrawFlipX();
+        DrawFlipY();
     }
 
-    private void DrawArrowHorizontal()
+    private void DrawFlipX()
     {
-        foreach (var position in Shapes.Instance.Arrows.Horizontal.Positions)
-            _mesh.SetPixel(position.x + Resolution.x / 2, position.y + Shapes.Instance.Arrows.Horizontal.Height / 2, Color.white);
+        print("Drawing");
+        _mesh.SetPixel(0, 0, Color.white);
+        foreach (var position in Shapes.Instance.UI.FlipX.Positions)
+            _mesh.SetPixel(position.x + Resolution.x / 2, position.y + Shapes.Instance.UI.FlipX.Height / 2, Color.white);
     }
 
-    private void DrawArrowVertical()
+    private void DrawFlipY()
     {
-        foreach (var position in Shapes.Instance.Arrows.Vertical.Positions)
-            _mesh.SetPixel(position.x + Shapes.Instance.Arrows.Vertical.Width / 2, position.y + Resolution.y / 2, Color.white);
+        foreach (var position in Shapes.Instance.UI.FlipY.Positions)
+            _mesh.SetPixel(position.x + Shapes.Instance.UI.FlipY.Width / 2, position.y + Resolution.y / 2, Color.white);
     }
 }

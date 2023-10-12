@@ -31,8 +31,8 @@ public class GameController : MonoBehaviour
 
     private void DisplayIntro()
     {
-        grid.AddShape(grid.Resolution.x / 2, grid.Resolution.y / 4, new Shape(introText));
-        grid.AddShape(grid.Resolution.x / 2, grid.Resolution.y / 4 * 3, new Shape(introText2));
+        grid.DrawShape(grid.Resolution.x / 2, grid.Resolution.y / 4, new Shape(introText));
+        grid.DrawShape(grid.Resolution.x / 2, grid.Resolution.y / 4 * 3, new Shape(introText2));
     }
 
     public void Pause()

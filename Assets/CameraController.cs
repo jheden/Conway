@@ -15,9 +15,15 @@ public class CameraController : MonoBehaviour
 
     public Rect Bounds { get; private set; }
 
-    //public UnityEvent<Rect> resize;
     public delegate void Resize(Rect rect);
     public Resize resize;
+
+    private Camera _camera;
+
+    private void Start()
+    {
+        _camera = GetComponent<Camera>();
+    }
 
     private void Update()
     {
@@ -27,8 +33,8 @@ public class CameraController : MonoBehaviour
     private void UpdateBounds()
     {
         var orthoGraphicSize = new Vector2(
-            Camera.main.orthographicSize * Screen.width / Screen.height,
-            Camera.main.orthographicSize
+            _camera.orthographicSize * _camera.aspect,
+            _camera.orthographicSize
         );
 
         var bounds = new Rect(-orthoGraphicSize, orthoGraphicSize * 2);
@@ -36,6 +42,7 @@ public class CameraController : MonoBehaviour
         if (bounds == Bounds) return;
 
         Bounds = bounds;
+        print(bounds);
 
         resize?.Invoke(Bounds);
     }
