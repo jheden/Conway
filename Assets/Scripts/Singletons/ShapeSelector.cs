@@ -3,6 +3,17 @@ using UnityEngine;
 [RequireComponent(typeof(MeshController))]
 public class ShapeSelector : MonoBehaviour
 {
+    #region Singleton
+    public static ShapeSelector Instance { get; private set; }
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+            Destroy(this);
+        else
+            Instance = this;
+    }
+    #endregion
+
     public int Resolution
     {
         get => _mesh.Resolution.x;

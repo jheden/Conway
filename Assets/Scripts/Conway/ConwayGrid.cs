@@ -96,6 +96,12 @@ public abstract class ConwayGrid : MonoBehaviour
             SetCurrent(position, true);
     }
 
+    public void AddShape(int i, Shape shape)
+    {
+        foreach (int position in GetIndices(i % Resolution.x, i / Resolution.y, shape))
+            SetCurrent(position, true);
+    }
+
     protected IEnumerable<int> GetAlive()
     {
         return Enumerable.Range(0, Length).Where(i => GetCurrent(i));

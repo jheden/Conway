@@ -2,6 +2,17 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
+    #region Singleton
+    public static GameController Instance { get; private set; }
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+            Destroy(this);
+        else
+            Instance = this;
+    }
+    #endregion
+
     private int minZoom = 1;
     private int maxZoom = 10;
     private float zoomStep = 3f;
@@ -11,20 +22,11 @@ public class GameController : MonoBehaviour
     public Texture2D introText2;
 
     public float ZoomInput { get; set; }
-    public static GameController Instance { get; private set; }
-    private void Awake()
-    {
-        if (Instance != null && Instance != this)
-            Destroy(this);
-        else
-            Instance = this;
-
-        Time.timeScale = 0;
-        Cursor.visible = false;
-    }
 
     private void Start()
     {
+        Time.timeScale = 0;
+        Cursor.visible = false;
     }
 
     private void DisplayIntro()

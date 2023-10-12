@@ -18,8 +18,7 @@ public class MeshController : MonoBehaviour
             _resolution = value;
             Increment = Size / value;
             Colors = new Color32[Resolution.x, Resolution.y];
-            UpdateVertices();
-            UpdateTriangles();
+            UpdateMesh();
         }
     }
     private Vector2Int _resolution = new(256, 256);
@@ -31,7 +30,7 @@ public class MeshController : MonoBehaviour
         {
             _size = value;
             Increment = value / Resolution;
-            UpdateVertices();
+            UpdateMesh();
         }
     }
     private Vector2 _size = new(20, 20);
@@ -42,12 +41,14 @@ public class MeshController : MonoBehaviour
     private List<int> _triangles = new();
     private List<Vector3> _vertices = new();
     private Mesh _mesh;
+    private MeshCollider _collider;
     #endregion
 
     #region Unity methods
     void Awake()
     {
         GetComponent<MeshFilter>().mesh = _mesh = new() { indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
+        TryGetComponent<MeshCollider>(out _collider);
 
         Size = _size;
         Resolution = _resolution;
@@ -60,6 +61,13 @@ public class MeshController : MonoBehaviour
     #endregion
 
     #region Methods
+    private void UpdateMesh()
+    {
+        UpdateVertices();
+        UpdateTriangles();
+        UpdateCollider();
+    }
+
     private void UpdateTriangles()
     {
         _triangles.Clear();
@@ -98,6 +106,12 @@ public class MeshController : MonoBehaviour
             }
 
         _mesh.vertices = _vertices.ToArray();
+    }
+
+    private void UpdateCollider()
+    {
+        if (_collider is null) return;
+        _collider.sharedMesh = _mesh;
     }
 
     private void UpdateColors()

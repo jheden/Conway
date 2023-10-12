@@ -47,5 +47,15 @@ public class PlayerController : MonoBehaviour
         }
 
         transform.position = (Vector2)Camera.main.ScreenToWorldPoint(MousePos);
+
+        if (UseInput && Physics.Raycast(Camera.main.ScreenPointToRay(MousePos), out RaycastHit hit))
+        {
+            MeshCollider mesh = hit.collider as MeshCollider;
+            if (mesh != null)
+                if (mesh.TryGetComponent<ConwayGrid>(out ConwayGrid grid))
+                    grid.AddShape(hit.triangleIndex / 2, ShapeSelector.Instance.Shape);
+                else if (mesh.TryGetComponent<ShapeSelector>(out ShapeSelector shapeSelector))
+                    print("clicked of shapeselector");
+        }
     }
 }
