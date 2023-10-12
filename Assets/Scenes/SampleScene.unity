@@ -504,6 +504,12 @@ MonoBehaviour:
       Value: {fileID: 2800000, guid: e2e363f9fe8c6ef41b730a218a68baea, type: 3}
     - Key: RotateRight
       Value: {fileID: 2800000, guid: b53a57cdd0644b7468a39acd4a381608, type: 3}
+    - Key: ArrowLeft
+      Value: {fileID: 2800000, guid: 8d5c5d78975ae494285b7cc792dc661c, type: 3}
+    - Key: ArrowRight
+      Value: {fileID: 2800000, guid: 1678aa370c84b1c428da4eca23f0a81a, type: 3}
+    - Key: Exit
+      Value: {fileID: 2800000, guid: 4f95e0a099372334b96950b1e7de31d7, type: 3}
 --- !u!64 &1407677007
 MeshCollider:
   m_ObjectHideFlags: 0
