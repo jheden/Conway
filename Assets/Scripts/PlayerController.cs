@@ -13,10 +13,8 @@ public class PlayerController : MonoBehaviour
     public Vector2 MoveInput { get; private set; }
     public bool UseInput { get; private set; }
 
-    private Animator _animator;
-    private SpriteRenderer _spriteRenderer;
-
     private Vector2 _warpPos;
+    private float _uiTimer;
 
     void Awake()
     {
@@ -33,9 +31,6 @@ public class PlayerController : MonoBehaviour
         actions["Rewind"].started += ctx => GameController.Instance.grid.Rewind = true;
         actions["Rewind"].canceled += ctx => GameController.Instance.grid.Rewind = false;
         actions.Enable();
-
-        _animator = GetComponent<Animator>();
-        _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     void Update()
@@ -54,8 +49,11 @@ public class PlayerController : MonoBehaviour
             if (mesh == null) return;
             if (mesh.TryGetComponent<ConwayGrid>(out ConwayGrid grid))
                 grid.Click(hit.triangleIndex / 2);
-            else if (mesh.TryGetComponent<ShapeSelector>(out ShapeSelector shapeSelector))
+            else if (mesh.TryGetComponent<ShapeSelector>(out ShapeSelector shapeSelector) && Time.unscaledTime > _uiTimer)
+            {
                 shapeSelector.Click(hit.triangleIndex / 2);
+                _uiTimer = Time.unscaledTime + 0.1f;
+            }
         }
     }
 }

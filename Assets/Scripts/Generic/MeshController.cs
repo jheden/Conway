@@ -21,7 +21,7 @@ public class MeshController : MonoBehaviour
             UpdateMesh();
         }
     }
-    private Vector2Int _resolution = new(256, 256);
+    private Vector2Int _resolution = Vector2Int.one;
 
     public Vector2 Size
     {
@@ -33,7 +33,7 @@ public class MeshController : MonoBehaviour
             UpdateMesh();
         }
     }
-    private Vector2 _size = new(20, 20);
+    private Vector2 _size = Vector2.one;
     #endregion
 
     #region Internal variables

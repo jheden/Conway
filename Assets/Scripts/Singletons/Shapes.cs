@@ -1,4 +1,6 @@
+using AYellowpaper.SerializedCollections;
 using System.Collections.Generic;
+using System.Dynamic;
 using UnityEngine;
 
 public sealed class Shapes : MonoBehaviour
@@ -20,80 +22,49 @@ public sealed class Shapes : MonoBehaviour
         LoadTextures();
     }
 
+    public dynamic Conway { get; private set; } = new ExpandoObject();
+    public dynamic Arrows { get; private set; } = new ExpandoObject();
+    public dynamic Helpers { get; private set; } = new ExpandoObject();
+
     #region Shape definitions
+    [SerializeField, SerializedDictionary("Name", "Texture")]
+    private SerializedDictionary<string, Texture2D> _conwayStillLifes;
 
-    #region Still lifes
-    [Header("Still Lifes")]
-    [SerializeField]
-    private Texture2D _beehive, _block, _boat, _loaf, _tub;
-    public Shape Beehive { get; private set; }
-    public Shape Block { get; private set; }
-    public Shape Boat { get; private set; }
-    public Shape Loaf { get; private set; }
-    public Shape Tub { get; private set; }
-    #endregion
+    [SerializeField, SerializedDictionary("Name", "Texture")]
+    private SerializedDictionary<string, Texture2D> _conwayOscillators;
 
-    #region Oscillators
-    [Header("Oscillators")]
-    [SerializeField]
-    private Texture2D _beacon, _blinker, _pulsar, _toad;
-    public Shape Beacon { get; private set; }
-    public Shape Blinker { get; private set; }
-    public Shape Pulsar { get; private set; }
-    public Shape Toad { get; private set; }
-    #endregion
+    [SerializeField, SerializedDictionary("Name", "Texture")]
+    private SerializedDictionary<string, Texture2D> _conwaySpaceships;
 
-    #region Spaceships
-    [Header("Spaceships")]
-    [SerializeField]
-    private Texture2D _glider;
-    public Shape Glider { get; private set; }
-    #endregion
+    [SerializeField, SerializedDictionary("Name", "Texture")]
+    private SerializedDictionary<string, Texture2D> _conwayMetuselahs;
 
-    #region Metuselahs
-    [Header("Metuselahs")]
-    [SerializeField]
-    private Texture2D _acorn;
-    public Shape Acorn { get; private set; }
-    #endregion
+    [SerializeField, SerializedDictionary("Name", "Texture")]
+    private SerializedDictionary<string, Texture2D> _arrows;
 
-    #region Helpers
-    [Header("Helpers")]
-    [SerializeField]
-    private Texture2D _neighbourhood;
-    public Shape Neighbourhood { get; private set; }
-    #endregion
-
+    [SerializeField, SerializedDictionary("Name", "Texture")]
+    private SerializedDictionary<string, Texture2D> _helpers;
     #endregion
 
     private void LoadTextures()
     {
-        #region Still Lifes
-        Beehive = new Shape(_beehive);
-        Block = new Shape(_block);
-        Boat = new Shape(_boat);
-        Loaf = new Shape(_loaf);
-        Tub = new Shape(_tub);
-        #endregion
+        var conway = Conway as IDictionary<string, object>;
+        foreach (KeyValuePair<string, Texture2D> item in _conwayStillLifes)
+            conway[item.Key] = new Shape(item.Value);
+        foreach (KeyValuePair<string, Texture2D> item in _conwayOscillators)
+            conway[item.Key] = new Shape(item.Value);
+        foreach (KeyValuePair<string, Texture2D> item in _conwaySpaceships)
+            conway[item.Key] = new Shape(item.Value);
+        foreach (KeyValuePair<string, Texture2D> item in _conwayMetuselahs)
+            conway[item.Key] = new Shape(item.Value);
 
-        #region Oscillators
-        Beacon = new Shape(_beacon);
-        Blinker = new Shape(_blinker);
-        Pulsar = new Shape(_pulsar);
-        Toad = new Shape(_toad);
-        #endregion
+        var arrows = Arrows as IDictionary<string, object>;
+        foreach (KeyValuePair<string, Texture2D> item in _arrows)
+            arrows[item.Key] = new Shape(item.Value);
 
-        #region Spaceships
-        Glider = new Shape(_glider);
-        #endregion
-
-        #region Methuselahs
-        Acorn = new Shape(_acorn);
-        #endregion
-
-        #region Helpers
-        Neighbourhood = new Shape(_neighbourhood);
-        #endregion
+        var helpers = Helpers as IDictionary<string, object>;
+        foreach (KeyValuePair<string, Texture2D> item in _helpers)
+            helpers[item.Key] = new Shape(item.Value);
     }
 }
 

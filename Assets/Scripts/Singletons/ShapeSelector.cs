@@ -1,3 +1,8 @@
+using AYellowpaper.SerializedCollections;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshController))]
@@ -15,45 +20,95 @@ public class ShapeSelector : MonoBehaviour
     }
     #endregion
 
-    public int Resolution
+    #region properties
+    public Vector2 Position
     {
-        get => _mesh.Resolution.x;
-        set =>_mesh.Resolution = new(value, value);
+        get => transform.position;
+        set => transform.position = value;
+    }
+
+    public Vector2Int Resolution
+    {
+        get => _mesh.Resolution;
+        set => _mesh.Resolution = value;
+    }
+
+    public Vector2 Size
+    {
+        get => _mesh.Size;
+        set => _mesh.Size = value;
     }
 
     public Shape Shape {
         get => _shape;
-        set {
-            _shape = value;
-            Resolution = Mathf.Max(value.Width, value.Height);
+        set
+        {
+            var center = Resolution / 2;
+            if (Shape is not null)
+                foreach (var position in Shape.Positions)
+                    _mesh.SetPixel(position.x + center.x, position.y + center.y, Color.black);
 
-            var halfRes = Resolution / 2;
+            _shape = value;
             foreach (var position in value.Positions)
-                _mesh.SetPixel(position.x + halfRes, position.y + halfRes, Color.white);
+                _mesh.SetPixel(position.x + center.x, position.y + center.y, Color.white);
         }
     }
-    private Shape _shape;
+    #endregion
 
+    private Shape _shape;
+    private List<Shape> _conwayShapes = new();
     private MeshController _mesh;
 
     private void Start()
     {
         _mesh = GetComponent<MeshController>();
-        _mesh.Size = new Vector2(3, 3);
 
-        Shape = Shapes.Instance.Acorn;
+        foreach (KeyValuePair<string, object> item in Shapes.Instance.Conway)
+            _conwayShapes.Add(item.Value as Shape);
+
+        DrawUI();
+
+        Shape = Shapes.Instance.Conway.Acorn;
+
+        CameraController.Instance.resize += OnCameraResize;
+    }
+
+    public void OnCameraResize(Rect bounds)
+    {
+        float aspect = bounds.width / bounds.height;
+        Size = new((bounds.width - bounds.height), bounds.height);
+        Position = new(bounds.xMin + Size.x / 2, 0);
+        Resolution = new(160, (int)(160 * aspect));
     }
 
     public void Click(int pixel)
     {
-        Click(pixel % Resolution, pixel / Resolution);
+        Click(pixel % Resolution.x, pixel / Resolution.x);
     }
 
     public void Click(int x, int y)
     {
-        if (x == 0 && y == Resolution - 1) Shape = Shape.RotateLeft;
-        else if (x == Resolution - 1 && y == Resolution - 1) Shape = Shape.RotateRight;
-        else if (y == 0) Shape = Shape.FlipX;
-        else if (x == 0) Shape = Shape.FlipY;
+        if (x < 5 && y > Resolution.y - 5) Shape = Shape.RotateLeft;
+        else if (x > Resolution.x - 5 && y > Resolution.y - 5) Shape = Shape.RotateRight;
+        else if (y < Shapes.Instance.Arrows.Horizontal.Height) Shape = Shape.FlipX;
+        else if (x < Shapes.Instance.Arrows.Horizontal.Width) Shape = Shape.FlipY;
+    }
+
+    private void DrawUI()
+    {
+        DrawArrowHorizontal();
+        DrawArrowVertical();
+    }
+
+    private void DrawArrowHorizontal()
+    {
+        foreach (var position in Shapes.Instance.Arrows.Horizontal.Positions)
+            _mesh.SetPixel(position.x + Resolution.x / 2, position.y + Shapes.Instance.Arrows.Horizontal.Height / 2, Color.white);
+    }
+
+    private void DrawArrowVertical()
+    {
+        foreach (var position in Shapes.Instance.Arrows.Vertical.Positions)
+            _mesh.SetPixel(position.x + Shapes.Instance.Arrows.Vertical.Width / 2, position.y + Resolution.y / 2, Color.white);
     }
 }

@@ -7,17 +7,14 @@ using UnityEngine;
 public abstract class ConwayGrid : MonoBehaviour
 {
     #region Properties
-    protected int Length { get; private set; }
-    protected List<bool[]> States { get; } = new();
-    protected abstract int[] Durations { get; }
-    protected bool[] Last { 
-        get => States.Last();
-        set => States.Add((bool[])value.Clone());
-    }
-
     public bool Rewind { get; set; }
 
-    protected Vector2 Increments { get => _mesh.Increment; }
+    public Vector2 Position
+    {
+        get => transform.position;
+        set => transform.position = value;
+    }
+
     public Vector2Int Resolution {
         get => _mesh.Resolution;
         set
@@ -31,6 +28,14 @@ public abstract class ConwayGrid : MonoBehaviour
     public Vector2 Size {
         get => _mesh.Size;
         set => _mesh.Size = value;
+    }
+    protected int Length { get; private set; }
+    protected List<bool[]> States { get; } = new();
+    protected abstract int[] Durations { get; }
+    protected bool[] Last
+    {
+        get => States.Last();
+        set => States.Add((bool[])value.Clone());
     }
     #endregion
 
@@ -122,7 +127,7 @@ public abstract class ConwayGrid : MonoBehaviour
         {
             int neighbours = 0;
 
-            foreach (int neighbour in GetIndices(i % Resolution.x, i / Resolution.x, Shapes.Instance.Neighbourhood))
+            foreach (int neighbour in GetIndices(i % Resolution.x, i / Resolution.x, Shapes.Instance.Helpers.Neighbourhood))
                 if (Last[neighbour]) neighbours++;
 
             SetCurrent(i, (Last[i] ? 2 : 3) <= neighbours && neighbours <= 3);
