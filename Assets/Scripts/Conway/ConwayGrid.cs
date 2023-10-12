@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshController))]
+[RequireComponent(typeof(MeshCollider))]
 public abstract class ConwayGrid : MonoBehaviour
 {
     #region Properties
@@ -70,12 +71,6 @@ public abstract class ConwayGrid : MonoBehaviour
     }
     #endregion
 
-    public void ClickDraw()
-    {
-        var position = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition) / Increments + Resolution / 2;
-        SetCurrent((int)position.x + (int)position.y * Resolution.x, true);
-    }
-
     public void Fill(int percent)
     {
         percent = Mathf.Clamp(percent, 0, 100);
@@ -84,10 +79,9 @@ public abstract class ConwayGrid : MonoBehaviour
                 SetCurrent(i, true);
     }
 
-    public void ClickShape()
+    public void Click(int pixel)
     {
-        var position = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition) / Increments + Resolution / 2;
-        AddShape((int)position.x, (int)position.y, Shapes.Instance.Pulsar);
+        AddShape(pixel, ShapeSelector.Instance.Shape);
     }
 
     public void AddShape(int x, int y, Shape shape)

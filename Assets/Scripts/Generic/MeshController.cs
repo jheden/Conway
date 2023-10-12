@@ -60,7 +60,22 @@ public class MeshController : MonoBehaviour
     }
     #endregion
 
-    #region Methods
+    #region Public methods
+    public void SetPixel(int x, int y, Color32 color)
+    {
+        Colors[
+            (x + Resolution.x) % Resolution.x,
+            (y + Resolution.y) % Resolution.y
+        ] = color;
+    }
+
+    public void SetPixel(int i, Color32 color)
+    {
+        Colors[i % Resolution.x, (i / Resolution.x) % Resolution.y] = color;
+    }
+    #endregion
+
+    #region Private methods
     private void UpdateMesh()
     {
         UpdateVertices();
@@ -124,19 +139,6 @@ public class MeshController : MonoBehaviour
                     _colors.Add(Colors[x, y]);
 
         _mesh.colors32 = _colors.ToArray();
-    }
-
-    public void SetPixel(int x, int y, Color32 color)
-    {
-        Colors[
-            (x + Resolution.x) % Resolution.x,
-            (y + Resolution.y) % Resolution.y
-        ] = color;
-    }
-
-    public void SetPixel(int i, Color32 color)
-    {
-        Colors[i % Resolution.x, (i / Resolution.x) % Resolution.y] = color;
     }
     #endregion
 }

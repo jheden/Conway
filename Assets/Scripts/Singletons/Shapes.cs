@@ -3,6 +3,7 @@ using UnityEngine;
 
 public sealed class Shapes : MonoBehaviour
 {
+    #region Singleton
     public static Shapes Instance { get; private set; }
 
     private void Awake()
@@ -11,7 +12,11 @@ public sealed class Shapes : MonoBehaviour
             Destroy(this);
         else
             Instance = this;
+    }
+    #endregion
 
+    private void Start()
+    {
         LoadTextures();
     }
 
@@ -94,10 +99,12 @@ public sealed class Shapes : MonoBehaviour
 
 public class Shape
 {
+    #region Properties
     public int[,] Data { get; private set; }
     public int Width { get; private set; }
     public int Height { get; private set; }
     public Vector2Int[] Positions { get; private set; }
+    #endregion
 
     #region Constructors and initialisation
     public Shape(int[,] shape)

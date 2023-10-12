@@ -1,6 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(MeshController))]
+[RequireComponent(typeof(MeshCollider))]
 public class ShapeSelector : MonoBehaviour
 {
     #region Singleton
@@ -41,5 +42,18 @@ public class ShapeSelector : MonoBehaviour
         _mesh.Size = new Vector2(3, 3);
 
         Shape = Shapes.Instance.Acorn;
+    }
+
+    public void Click(int pixel)
+    {
+        Click(pixel % Resolution, pixel / Resolution);
+    }
+
+    public void Click(int x, int y)
+    {
+        if (x == 0 && y == Resolution - 1) Shape = Shape.RotateLeft;
+        else if (x == Resolution - 1 && y == Resolution - 1) Shape = Shape.RotateRight;
+        else if (y == 0) Shape = Shape.FlipX;
+        else if (x == 0) Shape = Shape.FlipY;
     }
 }
