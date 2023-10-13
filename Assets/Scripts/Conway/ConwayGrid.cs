@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 [RequireComponent(typeof(MeshController))]
 [RequireComponent(typeof(MeshCollider))]
@@ -41,7 +43,6 @@ public abstract class ConwayGrid : MonoBehaviour
 
     #region Internal variables
     protected MeshController _mesh;
-    protected List<int> _neighborIndices = new();
     protected float _nextUpdate;
     #endregion
 
@@ -61,9 +62,6 @@ public abstract class ConwayGrid : MonoBehaviour
 
         Size = new Vector2(10, 10);
         Resolution = new Vector2Int(512, 512);
-
-        foreach (int neighbor in GetIndices(0, 0, Shapes.Instance.Helpers.Neighborhood))
-            _neighborIndices.Add(neighbor);
     }
 
     private void Update()
@@ -136,19 +134,33 @@ public abstract class ConwayGrid : MonoBehaviour
         return indices;
     }
 
+    protected List<int> GetNeighbors(int x, int y)
+    {
+        List<int> indices = new();
+
+        for (int dy = -1; dy <= 1; dy++)
+            for (int dx = -1; dx <= 1; dx++)
+                if (!(dx == 0 && dy == 0))
+                    indices.Add(
+                        (x + dx + Resolution.x) % Resolution.x +
+                        ((y + dy + Resolution.y) % Resolution.y) * Resolution.x
+                    );
+
+        return indices;
+    }
+
     protected void UpdateCells()
     {
+        int[] aliveNeighbors = new int[Length];
+
+        foreach (int i in GetAlive())
+            foreach (int neighbor in GetNeighbors(i % Resolution.x, i / Resolution.x))
+                aliveNeighbors[neighbor]++;
+
         SaveState();
 
         for (int i = 0; i < Length; i++)
-        {
-            int neighbors = 0;
-
-            foreach (int neighbor in _neighborIndices)
-                if (Last[(neighbor + i) % Last.Length]) neighbors++;
-
-            SetCurrent(i, (Last[i] ? 2 : 3) <= neighbors && neighbors <= 3);
-        }
+            SetCurrent(i, (Last[i] ? 2 : 3) <= aliveNeighbors[i] && aliveNeighbors[i] <= 3);
     }
 
     protected void UpdateColors()
