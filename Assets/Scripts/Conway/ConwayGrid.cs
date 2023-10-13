@@ -116,7 +116,7 @@ public abstract class ConwayGrid : MonoBehaviour
     #region void DrawShape
     public void DrawShape(int x, int y, Shape shape)
     {
-        RenderTexture.active = _pingPong ? _pong : _ping;
+        RenderTexture.active = _pingPong ? _ping : _pong;
         _texture.ReadPixels(new Rect(0, 0, _texture.width, _texture.height), 0, 0);
         foreach (var position in Shapes.Instance.Conway.Acorn.Positions)
         {
@@ -166,11 +166,10 @@ public abstract class ConwayGrid : MonoBehaviour
     {
         DispatchShader();
 
-        RenderTexture.active = _pingPong ? _pong : _ping;
+        RenderTexture.active = _pingPong ? _ping : _pong;
         _texture.ReadPixels(new Rect(0, 0, _texture.width, _texture.height), 0, 0);
         RenderTexture.active = null;
         _grid = _texture.GetPixels32().Select(color => color.r > 0.5f).ToArray();
-        _pingPong = !_pingPong;
     }
 
     protected void UpdateColors()
@@ -215,6 +214,8 @@ public abstract class ConwayGrid : MonoBehaviour
         shader.SetTexture(_kernel, "In", _pingPong ? _ping : _pong);
         shader.SetTexture(_kernel, "Out", _pingPong ? _pong : _ping);
         shader.Dispatch(_kernel, Resolution.x / 8, Resolution.y / 8, 1);
+
+        _pingPong = !_pingPong;
     }
     #endregion
 }
