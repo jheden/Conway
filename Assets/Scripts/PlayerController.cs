@@ -26,8 +26,8 @@ public class PlayerController : MonoBehaviour
         actions["Pause"].started += ctx => GameController.Instance.Pause();
         actions["SpeedDown"].started += ctx => GameController.Instance.SpeedDown();
         actions["SpeedUp"].started += ctx => GameController.Instance.SpeedUp();
-        actions["Zoom"].started += ctx => GameController.Instance.ZoomInput = ctx.ReadValue<float>();
-        actions["Zoom"].canceled += ctx => GameController.Instance.ZoomInput = 0f;
+        actions["Zoom"].started += ctx => GameController.Instance.grid.ZoomInput = ctx.ReadValue<float>();
+        actions["Zoom"].canceled += ctx => GameController.Instance.grid.ZoomInput = 0f;
         actions["Rewind"].started += ctx => GameController.Instance.grid.Rewind = true;
         actions["Rewind"].canceled += ctx => GameController.Instance.grid.Rewind = false;
         actions.Enable();

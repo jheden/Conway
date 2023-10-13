@@ -8,8 +8,14 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 [RequireComponent(typeof(MeshCollider))]
 public abstract class ConwayGrid : MonoBehaviour
 {
+
+    private int minSize = 10;
+    private int maxSize = 50;
+    private float zoomStep = 5f;
+
     #region Properties
     public bool Rewind { get; set; }
+    public float ZoomInput { get; set; }
 
     public Vector2 Position
     {
@@ -27,9 +33,9 @@ public abstract class ConwayGrid : MonoBehaviour
         }
     }
 
-    public Vector2 Size {
-        get => _mesh.Size;
-        set => _mesh.Size = value;
+    public float Size {
+        get => _mesh.Size.x;
+        set => _mesh.Size = new Vector2(value, value);
     }
     protected int Length { get; private set; }
     protected List<bool[]> States { get; } = new();
@@ -60,12 +66,15 @@ public abstract class ConwayGrid : MonoBehaviour
     {
         _mesh = GetComponent<MeshController>();
 
-        Size = new Vector2(10, 10);
+        Size = 10;
         Resolution = new Vector2Int(512, 512);
     }
 
     private void Update()
     {
+        if (ZoomInput != 0f)
+            Size = Mathf.Clamp(Size + ZoomInput * zoomStep * Time.unscaledDeltaTime, minSize, maxSize);
+
         if (Time.time > _nextUpdate)
         {
             if (Rewind) try { LoadState(); } catch { }
