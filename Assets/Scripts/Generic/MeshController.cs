@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshRenderer))]
@@ -6,7 +7,7 @@ using UnityEngine;
 public class MeshController : MonoBehaviour
 {
     #region Properties
-    public Color32[,] Colors { get; private set; }
+    public Color32[] Colors { get; set; }
 
     public Vector2 Increment { get; private set; } = new();
 
@@ -17,7 +18,7 @@ public class MeshController : MonoBehaviour
         {
             _resolution = value;
             Increment = Size / value;
-            Colors = new Color32[Resolution.x, Resolution.y];
+            Colors = new Color32[Resolution.x * Resolution.y];
             UpdateMesh();
         }
     }
@@ -39,6 +40,7 @@ public class MeshController : MonoBehaviour
     #region Internal variables
     private List<Color32> _colors = new();
     private List<int> _triangles = new();
+    //private List<Vector2> _uvs = new();
     private List<Vector3> _vertices = new();
     private Mesh _mesh;
     private MeshCollider _collider;
@@ -49,7 +51,6 @@ public class MeshController : MonoBehaviour
     {
         GetComponent<MeshFilter>().mesh = _mesh = new() { indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
         TryGetComponent<MeshCollider>(out _collider);
-        Colors = new Color32[Resolution.x, Resolution.y];
     }
 
     void LateUpdate()
@@ -61,9 +62,7 @@ public class MeshController : MonoBehaviour
     #region Public methods
     public void Clear(Color32 color)
     {
-        for (int y = 0; y < Resolution.y; y++)
-            for (int x = 0; x < Resolution.x; x++)
-                Colors[x, y] = color;
+        Colors = Enumerable.Repeat(color, Resolution.x * Resolution.y).ToArray();
     }
 
     public void Clear()
@@ -73,15 +72,12 @@ public class MeshController : MonoBehaviour
 
     public void SetPixel(int x, int y, Color32 color)
     {
-        Colors[
-            (x + Resolution.x) % Resolution.x,
-            (y + Resolution.y) % Resolution.y
-        ] = color;
+        Colors[x + y * Resolution.x] = color;
     }
 
     public void SetPixel(int i, Color32 color)
     {
-        Colors[i % Resolution.x, (i / Resolution.x) % Resolution.y] = color;
+        Colors[i] = color;
     }
     #endregion
 
@@ -115,6 +111,7 @@ public class MeshController : MonoBehaviour
     private void UpdateVertices()
     {
         _vertices.Clear();
+        //_uvs.Clear();
 
         var halfSize = Size / 2;
 
@@ -128,9 +125,16 @@ public class MeshController : MonoBehaviour
                 _vertices.Add(new Vector3(xPos + Increment.x, yPos));
                 _vertices.Add(new Vector3(xPos, yPos + Increment.y));
                 _vertices.Add(new Vector3(xPos + Increment.x, yPos + Increment.y));
+
+
+                //_uvs.Add(new Vector2((float)x / Resolution.x, (float)y / Resolution.y));
+                //_uvs.Add(new Vector2((float)(x + 1) / Resolution.x, (float)y / Resolution.y));
+                //_uvs.Add(new Vector2((float)x / Resolution.x, (float)(y + 1) / Resolution.y));
+                //_uvs.Add(new Vector2((float)(x + 1) / Resolution.x, (float)(y + 1) / Resolution.y));
             }
 
         _mesh.vertices = _vertices.ToArray();
+        //_mesh.uv = _uvs.ToArray();
     }
 
     private void UpdateCollider()
@@ -143,15 +147,16 @@ public class MeshController : MonoBehaviour
     {
         _colors.Clear();
 
-        for (int y = 0;y < Resolution.y; y++)
-            for (int x = 0; x < Resolution.x; x++)
-                for (int j = 0; j < 4; j++)
-                    _colors.Add(Colors[x, y]);
+        for (int i = 0; i < Colors.Length; i++)
+            for (int j = 0; j < 4; j++)
+                _colors.Add(Colors[i]);
 
-        try {
+        try
+        {
             _mesh.colors32 = _colors.ToArray();
         }
-        catch {
+        catch
+        {
             UpdateMesh();
             _mesh.colors32 = _colors.ToArray();
         }

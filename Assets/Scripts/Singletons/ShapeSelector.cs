@@ -1,11 +1,5 @@
-using AYellowpaper.SerializedCollections;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.Collections.LowLevel.Unsafe;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 [RequireComponent(typeof(MeshController))]
 [RequireComponent(typeof(MeshCollider))]
@@ -22,7 +16,7 @@ public class ShapeSelector : MonoBehaviour
     }
     #endregion
 
-    #region properties
+    #region Properties
     public Vector2 Position
     {
         get => transform.position;
@@ -55,10 +49,12 @@ public class ShapeSelector : MonoBehaviour
     }
     #endregion
 
+    #region Internal variables
+    private MeshController _mesh;
     private Shape _shape;
     private List<Shape> _conwayShapes = new();
     private int _shapeIndex;
-    private MeshController _mesh;
+    #endregion
 
     private enum Clickable {
         FpsDown,
@@ -79,8 +75,6 @@ public class ShapeSelector : MonoBehaviour
         foreach (KeyValuePair<string, object> item in Shapes.Instance.Conway)
             _conwayShapes.Add(item.Value as Shape);
 
-        Shape = Shapes.Instance.Conway.Acorn;
-
         CameraController.Instance.resize += OnCameraResize;
     }
 
@@ -93,11 +87,7 @@ public class ShapeSelector : MonoBehaviour
         Draw();
     }
 
-    public void Click(int i)
-    {
-        Click(new Vector2Int(i % Resolution.x, i / Resolution.x));
-    }
-
+    #region void Click
     public void Click(Vector2Int position)
     {
         foreach ((Clickable name, RectInt rect) in _clickables)
@@ -136,6 +126,12 @@ public class ShapeSelector : MonoBehaviour
         }
     }
 
+    public void Click(int i)
+    {
+        Click(new Vector2Int(i % Resolution.x, i / Resolution.x));
+    }
+    #endregion
+
     private void Draw()
     {
         _mesh.Clear();
@@ -168,6 +164,7 @@ public class ShapeSelector : MonoBehaviour
         Shape = Shape;
     }
 
+    #region RectInt DrawShape
     RectInt DrawShape(int x, int y, Shape shape, Color32 color)
     {
         foreach (var position in shape.Positions)
@@ -184,4 +181,5 @@ public class ShapeSelector : MonoBehaviour
     {
         return DrawShape(x, y, shape, Color.white);
     }
+    #endregion
 }

@@ -1,16 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
 [RequireComponent(typeof(MeshController))]
 [RequireComponent(typeof(MeshCollider))]
 public abstract class ConwayGrid : MonoBehaviour
 {
-
-    private int minScale = 1;
-    private int maxScale = 8;
+    bool[] _grid;
 
     #region Properties
     public bool Rewind { get; set; }
@@ -29,6 +25,8 @@ public abstract class ConwayGrid : MonoBehaviour
             _mesh.Resolution = value;
             Length = value.x * value.y;
             ResetGrid();
+            InitShader();
+            _grid = new bool[Length];
         }
     }
 
@@ -46,9 +44,25 @@ public abstract class ConwayGrid : MonoBehaviour
     }
     #endregion
 
-    #region Internal variables
+    #region Public vars
+    public Texture input;
+    public ComputeShader shader;
+    #endregion
+
+    #region Internal vars
+    private int _minScale = 1;
+    private int _maxScale = 8;
     protected MeshController _mesh;
     protected float _nextUpdate;
+
+    #region Shader vars
+    private int _kernel;
+    private bool _pingPong;
+    private RenderTexture _ping;
+    private RenderTexture _pong;
+    protected Texture2D _texture;
+    #endregion
+
     #endregion
 
     #region Abstract methods
@@ -61,23 +75,26 @@ public abstract class ConwayGrid : MonoBehaviour
     #endregion
 
     #region Unity methods
-    private void Start()
+    void Start()
     {
         _mesh = GetComponent<MeshController>();
 
         Size = 10;
         Resolution = new Vector2Int(512, 512);
+
+        InitShader();
     }
 
-    private void Update()
+    void Update()
     {
         if (ZoomInput != 0f)
-            transform.localScale = Vector2.one * Mathf.Clamp(transform.localScale.x + ZoomInput * transform.localScale.x * Time.unscaledDeltaTime, minScale, maxScale);
+            transform.localScale = Vector2.one * Mathf.Clamp(transform.localScale.x + ZoomInput * transform.localScale.x * Time.unscaledDeltaTime, _minScale, _maxScale);
 
         if (Time.time > _nextUpdate)
         {
             if (Rewind) try { LoadState(); } catch { }
             else UpdateCells();
+
             _nextUpdate = Time.time + 1f / 16;
         }
 
@@ -85,9 +102,9 @@ public abstract class ConwayGrid : MonoBehaviour
     }
     #endregion
 
-    public void Click(int pixel)
+    public void Click(int i)
     {
-        DrawShape(pixel, ShapeSelector.Instance.Shape);
+        DrawShape(i, ShapeSelector.Instance.Shape);
     }
 
     #region Draw methods
@@ -96,23 +113,26 @@ public abstract class ConwayGrid : MonoBehaviour
         _mesh.Clear();
     }
 
-    #region public void DrawShape
+    #region void DrawShape
     public void DrawShape(int x, int y, Shape shape)
     {
-        foreach (int position in GetIndices(x, y, shape))
-            SetCurrent(position, true);
+        RenderTexture.active = _pingPong ? _pong : _ping;
+        _texture.ReadPixels(new Rect(0, 0, _texture.width, _texture.height), 0, 0);
+        foreach (var position in Shapes.Instance.Conway.Acorn.Positions)
+        {
+            _texture.SetPixel(x + position.x, y + position.y, Color.white);
+            print($"setting {x + position.x}, {y + position.y}");
+        }
+        _texture.Apply();
+        RenderTexture.active = null;
+
+        DispatchShader();
+        UpdateColors();
     }
 
     public void DrawShape(int i, Shape shape)
     {
-        foreach (int position in GetIndices(i % Resolution.x, i / Resolution.y, shape))
-            SetCurrent(position, true);
-    }
-
-    public void DrawShape(Vector2Int pos, Shape shape)
-    {
-        foreach (int position in GetIndices(pos.x, pos.y, shape))
-            SetCurrent(position, true);
+        DrawShape(i % Resolution.x, i / Resolution.y, shape);
     }
     #endregion
 
@@ -129,7 +149,7 @@ public abstract class ConwayGrid : MonoBehaviour
         return Enumerable.Range(0, Length).Where(i => GetCurrent(i));
     }
 
-    protected List<int> GetIndices(int x, int y, Shape shape)
+    protected int[] GetIndices(int x, int y, Shape shape)
     {
         List<int> indices = new();
 
@@ -139,41 +159,62 @@ public abstract class ConwayGrid : MonoBehaviour
                 ((y + position.y + Resolution.y) % Resolution.y) * Resolution.x
             );
 
-        return indices;
-    }
-
-    protected List<int> GetNeighbors(int x, int y)
-    {
-        List<int> indices = new();
-
-        for (int dy = -1; dy <= 1; dy++)
-            for (int dx = -1; dx <= 1; dx++)
-                if (!(dx == 0 && dy == 0))
-                    indices.Add(
-                        (x + dx + Resolution.x) % Resolution.x +
-                        ((y + dy + Resolution.y) % Resolution.y) * Resolution.x
-                    );
-
-        return indices;
+        return indices.ToArray();
     }
 
     protected void UpdateCells()
     {
-        int[] aliveNeighbors = new int[Length];
+        DispatchShader();
 
-        foreach (int i in GetAlive())
-            foreach (int neighbor in GetNeighbors(i % Resolution.x, i / Resolution.x))
-                aliveNeighbors[neighbor]++;
-
-        SaveState();
-
-        for (int i = 0; i < Length; i++)
-            SetCurrent(i, (Last[i] ? 2 : 3) <= aliveNeighbors[i] && aliveNeighbors[i] <= 3);
+        RenderTexture.active = _pingPong ? _pong : _ping;
+        _texture.ReadPixels(new Rect(0, 0, _texture.width, _texture.height), 0, 0);
+        RenderTexture.active = null;
+        _grid = _texture.GetPixels32().Select(color => color.r > 0.5f).ToArray();
+        _pingPong = !_pingPong;
     }
 
     protected void UpdateColors()
     {
-        for (int i = 0; i < Length; i++)
-            _mesh.SetPixel(i, GetColor(i));
+        _mesh.Colors = _grid.Select(alive => alive ? (Color32)Color.white : (Color32)Color.black).ToArray();
     }
+
+    #region Shader
+    void InitShader()
+    {
+        _kernel = shader.FindKernel("Conway");
+
+        _ping = new RenderTexture(Resolution.x, Resolution.y, 24);
+        _pong = new RenderTexture(Resolution.x, Resolution.y, 24);
+        _ping.wrapMode = _pong.wrapMode = TextureWrapMode.Repeat;
+        _ping.enableRandomWrite = _pong.enableRandomWrite = true;
+        _ping.filterMode = _pong.filterMode = FilterMode.Point;
+        _ping.useMipMap = _pong.useMipMap = false;
+        _ping.Create();
+        _pong.Create();
+
+        _texture = new Texture2D(Resolution.x, Resolution.y);
+
+        Graphics.Blit(input, _pong);
+
+        shader.SetFloat("Width", Resolution.x);
+        shader.SetFloat("Height", Resolution.y);
+        shader.SetVectorArray("neighborPos", new Vector4[8] {
+            new(-1, -1),
+            new(0, -1),
+            new(1, -1),
+            new(-1, 0),
+            new(1, 0),
+            new(-1, 1),
+            new(0, 1),
+            new(1, 1)
+        });
+    }
+
+    void DispatchShader()
+    {
+        shader.SetTexture(_kernel, "In", _pingPong ? _ping : _pong);
+        shader.SetTexture(_kernel, "Out", _pingPong ? _pong : _ping);
+        shader.Dispatch(_kernel, Resolution.x / 8, Resolution.y / 8, 1);
+    }
+    #endregion
 }

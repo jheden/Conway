@@ -215,8 +215,8 @@ GameObject:
   - component: {fileID: 507306899}
   - component: {fileID: 507306904}
   - component: {fileID: 507306903}
-  - component: {fileID: 507306902}
   - component: {fileID: 507306901}
+  - component: {fileID: 507306902}
   - component: {fileID: 507306900}
   m_Layer: 5
   m_Name: StatViewer
@@ -623,10 +623,6 @@ MonoBehaviour:
       Value: {fileID: 2800000, guid: e7266b62ff23e8e4f8f4719893f547c1, type: 3}
     - Key: Z
       Value: {fileID: 2800000, guid: 0706accb441c20e44a43959ee47c04d5, type: 3}
-  _helpers:
-    _serializedList:
-    - Key: Neighborhood
-      Value: {fileID: 2800000, guid: 8d41f3aef80d8b04fbccfa21dd725c9b, type: 3}
   _ui:
     _serializedList:
     - Key: FlipX
@@ -797,6 +793,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e64538f1a037b742b90a742cdc8b3cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  input: {fileID: 2800000, guid: cd9e279bec747154c937ec95751be6fd, type: 3}
+  shader: {fileID: 7200000, guid: bf3ba1a80b76f1441b6a81d4f9bf316d, type: 3}
 --- !u!1 &1912147166
 GameObject:
   m_ObjectHideFlags: 0
@@ -909,5 +907,5 @@ SceneRoots:
   - {fileID: 1912147169}
   - {fileID: 850866302}
   - {fileID: 1696822039}
-  - {fileID: 54548074}
   - {fileID: 916021164}
+  - {fileID: 54548074}

@@ -21,7 +21,6 @@ public sealed class Shapes : MonoBehaviour
 
     #region Properties
     public dynamic Conway { get; private set; } = new ExpandoObject();
-    public dynamic Helpers { get; private set; } = new ExpandoObject();
     public dynamic Font { get; private set; } = new ExpandoObject();
     public dynamic UI { get; private set; } = new ExpandoObject();
     #endregion
@@ -43,9 +42,6 @@ public sealed class Shapes : MonoBehaviour
     private SerializedDictionary<string, Texture2D> _font;
 
     [SerializeField, SerializedDictionary("Name", "Texture")]
-    private SerializedDictionary<string, Texture2D> _helpers;
-
-    [SerializeField, SerializedDictionary("Name", "Texture")]
     private SerializedDictionary<string, Texture2D> _ui;
     #endregion
 
@@ -63,10 +59,6 @@ public sealed class Shapes : MonoBehaviour
 
         tmp = Font as IDictionary<string, object>;
         foreach (KeyValuePair<string, Texture2D> item in _font)
-            tmp[item.Key] = new Shape(item.Value);
-
-        tmp = Helpers as IDictionary<string, object>;
-        foreach (KeyValuePair<string, Texture2D> item in _helpers)
             tmp[item.Key] = new Shape(item.Value);
 
         tmp = UI as IDictionary<string, object>;

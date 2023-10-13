@@ -1,0 +1,22 @@
+#pragma kernel Conway
+
+float Width;
+float Height;
+float2 neighborPos[8];
+int shapePos[256 * 256];
+sampler2D In;
+RWTexture2D<float4> Out;
+
+[numthreads(16, 16, 1)]
+void Conway(uint3 id : SV_DispatchThreadID)
+{
+    float2 pos = float2((id.x) / Width, (id.y) / Height);
+    float2 size = float2(1.0 / Width, 1.0 / Height);
+    
+    float neighbors = 0;
+    for (int i = 0; i < 8; i++)
+        neighbors += tex2Dlod(In, float4(neighborPos[i] * size + pos, 0, 1)).r;
+
+    float min = tex2Dlod(In, float4(pos.x, pos.y, 0, 0)).r > 0.5 ? 1.5 : 2.5;
+    Out[id.xy] = min < neighbors && neighbors < 3.5 ? float4(1, 1, 1, 1) : float4(0, 0, 0, 1);
+}

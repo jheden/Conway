@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshController))]
@@ -17,7 +16,7 @@ public class StatViewer : MonoBehaviour
     }
     #endregion
 
-    #region properties
+    #region Properties
     public Vector2 Position
     {
         get => transform.position;
@@ -37,7 +36,9 @@ public class StatViewer : MonoBehaviour
     }
     #endregion
 
+    #region Internal variables
     private MeshController _mesh;
+    #endregion
 
     private enum Clickable
     {
@@ -89,19 +90,8 @@ public class StatViewer : MonoBehaviour
     {
         _mesh.Clear();
         _clickables.Clear();
-        //DrawFPS();
         DrawExit();
     }
-
-    //private void DrawFPS()
-    //{
-    //    DrawShape(9, Resolution.y - 9, Shapes.Instance.Font.F);
-    //    DrawShape(27, Resolution.y - 9, Shapes.Instance.Font.P);
-    //    DrawShape(45, Resolution.y - 9, Shapes.Instance.Font.S);
-
-    //    _clickables.Add(Clickable.FpsDown, DrawShape(81, Resolution.y - 9, Shapes.Instance.UI.ArrowLeft));
-    //    _clickables.Add(Clickable.FpsUp, DrawShape(135, Resolution.y - 9, Shapes.Instance.UI.ArrowRight));
-    //}
 
     private void DrawExit()
     {
