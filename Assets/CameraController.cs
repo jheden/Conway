@@ -42,7 +42,6 @@ public class CameraController : MonoBehaviour
         if (bounds == Bounds) return;
 
         Bounds = bounds;
-        print(bounds);
 
         resize?.Invoke(Bounds);
     }

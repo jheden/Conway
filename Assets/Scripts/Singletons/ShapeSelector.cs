@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections.LowLevel.Unsafe;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -44,21 +45,33 @@ public class ShapeSelector : MonoBehaviour
         get => _shape;
         set
         {
-            var center = Resolution / 2;
             if (Shape is not null)
                 foreach (var position in Shape.Positions)
-                    _mesh.SetPixel(position.x + center.x, position.y + center.y, Color.black);
+                    _mesh.SetPixel(position.x + 80, position.y + 80, Color.black);
 
             _shape = value;
             foreach (var position in value.Positions)
-                _mesh.SetPixel(position.x + center.x, position.y + center.y, Color.white);
+                _mesh.SetPixel(position.x + 80, position.y + 80, Color.white);
         }
     }
     #endregion
 
     private Shape _shape;
     private List<Shape> _conwayShapes = new();
+    private int _shapeIndex;
     private MeshController _mesh;
+
+    private enum Clickable {
+        FpsDown,
+        FpsUp,
+        PrevShape,
+        NextShape,
+        FlipX,
+        FlipY,
+        RotLeft,
+        RotRight
+    };
+    private Dictionary<Clickable, RectInt> _clickables = new();
 
     private void Start()
     {
@@ -67,8 +80,6 @@ public class ShapeSelector : MonoBehaviour
         foreach (KeyValuePair<string, object> item in Shapes.Instance.Conway)
             _conwayShapes.Add(item.Value as Shape);
 
-        DrawUI();
-
         Shape = Shapes.Instance.Conway.Acorn;
 
         CameraController.Instance.resize += OnCameraResize;
@@ -76,42 +87,100 @@ public class ShapeSelector : MonoBehaviour
 
     public void OnCameraResize(Rect bounds)
     {
-        float aspect = bounds.width / bounds.height;
         Size = new((bounds.width - bounds.height) / 2, bounds.height);
         Position = new(bounds.xMin + Size.x / 2, 0);
-        Resolution = new(160, (int)(160 * aspect));
+        Resolution = new((int)(512 * Size.x / Size.y), 512);
+
+        Draw();
     }
 
-    public void Click(int pixel)
+    public void Click(int i)
     {
-        Click(pixel % Resolution.x, pixel / Resolution.x);
+        Click(new Vector2Int(i % Resolution.x, i / Resolution.x));
     }
 
-    public void Click(int x, int y)
+    public void Click(Vector2Int position)
     {
-        if (x < 5 && y > Resolution.y - 5) Shape = Shape.RotateLeft;
-        else if (x > Resolution.x - 5 && y > Resolution.y - 5) Shape = Shape.RotateRight;
-        else if (y < Shapes.Instance.UI.FlipX.Height) Shape = Shape.FlipX;
-        else if (x < Shapes.Instance.UI.FlipY.Width) Shape = Shape.FlipY;
+        print(position);
+        foreach ((Clickable name, RectInt rect) in _clickables)
+        {
+            print(name);
+            print(rect);
+            if (rect.Contains(position))
+            {
+                switch (name)
+                {
+                    case Clickable.FpsDown:
+                        break;
+                    case Clickable.FpsUp:
+                        break;
+                    case Clickable.PrevShape:
+                        Shape = _conwayShapes[(--_shapeIndex + _conwayShapes.Count) % _conwayShapes.Count];
+                        break;
+                    case Clickable.NextShape:
+                        Shape = _conwayShapes[(++_shapeIndex + _conwayShapes.Count) % _conwayShapes.Count];
+                        break;
+                    case Clickable.FlipX:
+                        Shape = Shape.FlipX;
+                        break;
+                    case Clickable.FlipY:
+                        Shape = Shape.FlipY;
+                        break;
+                    case Clickable.RotLeft:
+                        Shape = Shape.RotateLeft;
+                        break;
+                    case Clickable.RotRight:
+                        Shape = Shape.RotateRight;
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            }
+        }
     }
 
-    private void DrawUI()
+    private void Draw()
     {
-        DrawFlipX();
-        DrawFlipY();
+        _mesh.Clear();
+        _clickables.Clear();
+        DrawFPS();
+        DrawSelector();
     }
 
-    private void DrawFlipX()
+    private void DrawFPS()
     {
-        print("Drawing");
-        _mesh.SetPixel(0, 0, Color.white);
-        foreach (var position in Shapes.Instance.UI.FlipX.Positions)
-            _mesh.SetPixel(position.x + Resolution.x / 2, position.y + Shapes.Instance.UI.FlipX.Height / 2, Color.white);
+        DrawShape(9, Resolution.y - 9, Shapes.Instance.Font.F);
+        DrawShape(27, Resolution.y - 9, Shapes.Instance.Font.P);
+        DrawShape(45, Resolution.y - 9, Shapes.Instance.Font.S);
+
+        _clickables.Add(Clickable.FpsDown, DrawShape(81, Resolution.y - 9, Shapes.Instance.UI.ArrowLeft));
+        _clickables.Add(Clickable.FpsUp, DrawShape(135, Resolution.y - 9, Shapes.Instance.UI.ArrowRight));
     }
 
-    private void DrawFlipY()
+    private void DrawSelector()
     {
-        foreach (var position in Shapes.Instance.UI.FlipY.Positions)
-            _mesh.SetPixel(position.x + Shapes.Instance.UI.FlipY.Width / 2, position.y + Resolution.y / 2, Color.white);
+        _clickables.Add(Clickable.FlipX, DrawShape(80, 9, Shapes.Instance.UI.FlipX));
+        _clickables.Add(Clickable.FlipY, DrawShape(9, 80, Shapes.Instance.UI.FlipY));
+
+        _clickables.Add(Clickable.PrevShape, DrawShape(32, 155, Shapes.Instance.UI.ArrowLeft));
+        _clickables.Add(Clickable.NextShape, DrawShape(128, 155, Shapes.Instance.UI.ArrowRight));
+
+        _clickables.Add(Clickable.RotLeft, DrawShape(64, 155, Shapes.Instance.UI.RotateLeft));
+        _clickables.Add(Clickable.RotRight, DrawShape(96, 155, Shapes.Instance.UI.RotateRight));
+
+        Shape = Shape;
+    }
+
+    RectInt DrawShape(int x, int y, Shape shape)
+    {
+        foreach (var position in shape.Positions)
+            _mesh.SetPixel(x + position.x, y + position.y, Color.white);
+        return new RectInt(
+            x - shape.Width / 2,
+            y - shape.Height / 2,
+            shape.Width,
+            shape.Height
+        );
     }
 }
