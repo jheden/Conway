@@ -46,12 +46,11 @@ public class ShapeSelector : MonoBehaviour
         set
         {
             if (Shape is not null)
-                foreach (var position in Shape.Positions)
-                    _mesh.SetPixel(position.x + 80, position.y + 80, Color.black);
+                DrawShape(80, 80, Shape, Color.black);
+
+            DrawShape(80, 80, value);
 
             _shape = value;
-            foreach (var position in value.Positions)
-                _mesh.SetPixel(position.x + 80, position.y + 80, Color.white);
         }
     }
     #endregion
@@ -172,15 +171,20 @@ public class ShapeSelector : MonoBehaviour
         Shape = Shape;
     }
 
-    RectInt DrawShape(int x, int y, Shape shape)
+    RectInt DrawShape(int x, int y, Shape shape, Color32 color)
     {
         foreach (var position in shape.Positions)
-            _mesh.SetPixel(x + position.x, y + position.y, Color.white);
+            _mesh.SetPixel(x + position.x, y + position.y, color);
         return new RectInt(
             x - shape.Width / 2,
             y - shape.Height / 2,
             shape.Width,
             shape.Height
         );
+    }
+
+    RectInt DrawShape(int x, int y, Shape shape)
+    {
+        return DrawShape(x, y, shape, Color.white);
     }
 }

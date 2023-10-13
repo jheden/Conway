@@ -60,7 +60,7 @@ public abstract class ConwayGrid : MonoBehaviour
         _mesh = GetComponent<MeshController>();
 
         Size = new Vector2(10, 10);
-        Resolution = new Vector2Int(256, 256);
+        Resolution = new Vector2Int(512, 512);
     }
 
     private void Update()
