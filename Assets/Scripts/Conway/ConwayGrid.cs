@@ -9,9 +9,8 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 public abstract class ConwayGrid : MonoBehaviour
 {
 
-    private int minSize = 10;
-    private int maxSize = 50;
-    private float zoomStep = 5f;
+    private int minScale = 1;
+    private int maxScale = 8;
 
     #region Properties
     public bool Rewind { get; set; }
@@ -73,7 +72,7 @@ public abstract class ConwayGrid : MonoBehaviour
     private void Update()
     {
         if (ZoomInput != 0f)
-            Size = Mathf.Clamp(Size + ZoomInput * zoomStep * Time.unscaledDeltaTime, minSize, maxSize);
+            transform.localScale = Vector2.one * Mathf.Clamp(transform.localScale.x + ZoomInput * transform.localScale.x * Time.unscaledDeltaTime, minScale, maxScale);
 
         if (Time.time > _nextUpdate)
         {
