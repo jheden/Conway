@@ -100,11 +100,8 @@ public class ShapeSelector : MonoBehaviour
 
     public void Click(Vector2Int position)
     {
-        print(position);
         foreach ((Clickable name, RectInt rect) in _clickables)
         {
-            print(name);
-            print(rect);
             if (rect.Contains(position))
             {
                 switch (name)

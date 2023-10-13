@@ -47,8 +47,10 @@ public class PlayerController : MonoBehaviour
         {
             MeshCollider mesh = hit.collider as MeshCollider;
             if (mesh == null) return;
-            if (mesh.TryGetComponent<ConwayGrid>(out ConwayGrid grid))
-                grid.Click(hit.triangleIndex / 2);
+            if (mesh.TryGetComponent<ConwayGrid>(out ConwayGrid conwayGrid))
+                conwayGrid.Click(hit.triangleIndex / 2);
+            else if (mesh.TryGetComponent<StatViewer>(out StatViewer statViewer))
+                statViewer.Click(hit.triangleIndex / 2);
             else if (mesh.TryGetComponent<ShapeSelector>(out ShapeSelector shapeSelector) && Time.unscaledTime > _uiTimer)
             {
                 shapeSelector.Click(hit.triangleIndex / 2);

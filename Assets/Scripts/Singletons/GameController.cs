@@ -24,6 +24,14 @@ public class GameController : MonoBehaviour
         Cursor.visible = false;
     }
 
+    public void Quit()
+    {
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+        #endif
+        Application.Quit();
+    }
+
     private void DisplayIntro()
     {
         grid.DrawShape(grid.Resolution.x / 2, grid.Resolution.y / 4, new Shape(introText));
