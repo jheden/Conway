@@ -40,8 +40,8 @@ public abstract class ConwayGrid : MonoBehaviour
     #endregion
 
     #region Internal variables
-    protected List<int> _indices = new();
     protected MeshController _mesh;
+    protected List<int> _neighborIndices = new();
     protected float _nextUpdate;
     #endregion
 
@@ -61,6 +61,9 @@ public abstract class ConwayGrid : MonoBehaviour
 
         Size = new Vector2(10, 10);
         Resolution = new Vector2Int(512, 512);
+
+        foreach (int neighbor in GetIndices(0, 0, Shapes.Instance.Helpers.Neighborhood))
+            _neighborIndices.Add(neighbor);
     }
 
     private void Update()
@@ -76,19 +79,18 @@ public abstract class ConwayGrid : MonoBehaviour
     }
     #endregion
 
+    public void Click(int pixel)
+    {
+        DrawShape(pixel, ShapeSelector.Instance.Shape);
+    }
+
     #region Draw methods
     public void Clear()
     {
         _mesh.Clear();
     }
 
-    public void Fill(int percent)
-    {
-        percent = Mathf.Clamp(percent, 0, 100);
-        for (int i = 0; i < Length; i++)
-            SetCurrent(i, Random.Range(0, 100) < percent);
-    }
-
+    #region public void DrawShape
     public void DrawShape(int x, int y, Shape shape)
     {
         foreach (int position in GetIndices(x, y, shape))
@@ -100,12 +102,21 @@ public abstract class ConwayGrid : MonoBehaviour
         foreach (int position in GetIndices(i % Resolution.x, i / Resolution.y, shape))
             SetCurrent(position, true);
     }
+
+    public void DrawShape(Vector2Int pos, Shape shape)
+    {
+        foreach (int position in GetIndices(pos.x, pos.y, shape))
+            SetCurrent(position, true);
+    }
     #endregion
 
-    public void Click(int pixel)
+    public void Fill(int percent)
     {
-        DrawShape(pixel, ShapeSelector.Instance.Shape);
+        percent = Mathf.Clamp(percent, 0, 100);
+        for (int i = 0; i < Length; i++)
+            SetCurrent(i, Random.Range(0, 100) < percent);
     }
+    #endregion
 
     protected IEnumerable<int> GetAlive()
     {
@@ -114,15 +125,15 @@ public abstract class ConwayGrid : MonoBehaviour
 
     protected List<int> GetIndices(int x, int y, Shape shape)
     {
-        _indices.Clear();
+        List<int> indices = new();
 
         foreach (var position in shape.Positions)
-            _indices.Add(
+            indices.Add(
                 (x + position.x + Resolution.x) % Resolution.x +
                 ((y + position.y + Resolution.y) % Resolution.y) * Resolution.x
             );
 
-        return _indices;
+        return indices;
     }
 
     protected void UpdateCells()
@@ -133,8 +144,8 @@ public abstract class ConwayGrid : MonoBehaviour
         {
             int neighbors = 0;
 
-            foreach (int neighbor in GetIndices(i % Resolution.x, i / Resolution.x, Shapes.Instance.Helpers.Neighborhood))
-                if (Last[neighbor]) neighbors++;
+            foreach (int neighbor in _neighborIndices)
+                if (Last[(neighbor + i) % Last.Length]) neighbors++;
 
             SetCurrent(i, (Last[i] ? 2 : 3) <= neighbors && neighbors <= 3);
         }
